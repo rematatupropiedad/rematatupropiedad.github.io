@@ -5,141 +5,79 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RematatuPropiedad.cl — Vende sin corredor</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ===== RESET & BASE ===== */
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#050C1A;--surface:#0A1628;--surface2:#0D1E35;
   --orange:#FF6B00;--orange2:#FF8C35;--amber:#FFB347;
   --white:#F0F6FF;--text:#C8D8F0;--text2:#7A95B8;
   --border:rgba(255,255,255,0.08);--border-o:rgba(255,107,0,0.3);
-  --success:#00E5A0;--live:#FF3B6B;
-  --r:16px;
+  --success:#00E5A0;--live:#FF3B6B;--r:16px;
 }
 html{font-size:16px}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased}
-a{text-decoration:none;color:inherit}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;line-height:1.2}
 button,input,select,textarea{font-family:'Inter',sans-serif;font-size:1rem}
-h1,h2,h3,h4,h5{font-family:'Plus Jakarta Sans',sans-serif;line-height:1.2}
-img{max-width:100%}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:#1a3057;border-radius:4px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#1a3057;border-radius:4px}
 
-/* ===== NAV ===== */
-nav{
-  background:rgba(5,12,26,0.92);backdrop-filter:blur(16px);
-  height:60px;padding:0 1.25rem;
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:100;
-  border-bottom:1px solid var(--border);
-}
-.logo{display:flex;align-items:center;gap:0.6rem}
+/* NAV */
+nav{background:rgba(5,12,26,0.92);backdrop-filter:blur(16px);height:60px;padding:0 1.25rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:0.6rem;cursor:pointer}
 .logo-mark{width:32px;height:32px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:0.95rem;color:#fff;flex-shrink:0;box-shadow:0 0 16px rgba(255,107,0,0.4)}
-.logo-text{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.9rem;color:var(--white);white-space:nowrap}
+.logo-text{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.9rem;color:var(--white)}
 .logo-text em{color:var(--orange);font-style:normal}
-.nav-actions{display:flex;align-items:center;gap:0.5rem}
 .nav-links{display:none}
+.nav-actions{display:flex;align-items:center;gap:0.5rem}
+.nav-user{display:flex;align-items:center;gap:0.5rem}
+.nav-user-name{font-size:0.82rem;color:var(--text2);display:none}
 .btn-ol{background:transparent;color:var(--orange);border:1px solid var(--border-o);padding:0.45rem 1rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.875rem;transition:all .2s}
 .btn-ol:hover{background:rgba(255,107,0,0.1)}
 .btn-or{background:var(--orange);color:#fff;border:none;padding:0.45rem 1.1rem;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.875rem;transition:all .2s;box-shadow:0 0 16px rgba(255,107,0,0.3)}
 .btn-or:hover{background:var(--orange2)}
+.btn-icon{background:rgba(255,255,255,0.06);border:1px solid var(--border);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;color:var(--text2)}
+.btn-icon:hover{background:rgba(255,255,255,0.1);color:var(--white)}
+.notif-badge{position:relative}
+.notif-count{position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:var(--live);border-radius:50%;font-size:0.6rem;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center}
 
-/* ===== HERO — mobile-first ===== */
-.hero{
-  padding:2rem 1.25rem 2.5rem;
-  position:relative;overflow:hidden;
-  background:var(--bg);
-}
-.hero::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(255,107,0,0.07) 0%,transparent 65%);
-  pointer-events:none;
-}
-.hero-grid{
-  position:absolute;inset:0;
-  background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
-  background-size:40px 40px;
-  mask-image:radial-gradient(ellipse at 50% 0%,black 20%,transparent 70%);
-  pointer-events:none;
-}
+/* HERO */
+.hero{padding:2rem 1.25rem 2.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 120% 60% at 50% 0%,rgba(255,107,0,0.07) 0%,transparent 65%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse at 50% 0%,black 20%,transparent 70%);pointer-events:none}
 .hero-inner{position:relative;z-index:1;max-width:680px;margin:0 auto}
-.hero-badge{
-  display:inline-flex;align-items:center;gap:0.4rem;
-  background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.25);
-  color:var(--success);font-size:0.75rem;font-weight:700;
-  letter-spacing:0.06em;text-transform:uppercase;
-  padding:0.3rem 0.8rem;border-radius:100px;margin-bottom:1.25rem;
-}
+.hero-badge{display:inline-flex;align-items:center;gap:0.4rem;background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.25);color:var(--success);font-size:0.75rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;padding:0.3rem 0.8rem;border-radius:100px;margin-bottom:1.25rem}
 .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 6px var(--success);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
-.hero h1{
-  font-size:2.1rem;font-weight:800;color:var(--white);
-  margin-bottom:1rem;letter-spacing:-0.01em;
-}
+.hero h1{font-size:2.1rem;font-weight:800;color:var(--white);margin-bottom:1rem;letter-spacing:-0.01em}
 .hero h1 .acc{color:var(--orange);display:block}
 .hero-sub{font-size:1rem;color:var(--text2);line-height:1.7;margin-bottom:1.75rem}
 .hero-sub strong{color:var(--white)}
 .hero-btns{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:2rem}
-.btn-cta{
-  background:var(--orange);color:#fff;border:none;
-  padding:1rem 1.5rem;border-radius:12px;
-  font-size:1rem;font-weight:700;cursor:pointer;
-  font-family:'Plus Jakarta Sans',sans-serif;
-  transition:all .2s;box-shadow:0 0 24px rgba(255,107,0,0.3);
-  width:100%;text-align:center;
-}
-.btn-cta:hover{background:var(--orange2);transform:translateY(-1px);box-shadow:0 0 32px rgba(255,107,0,0.45)}
-.btn-ghost{
-  background:rgba(255,255,255,0.04);color:var(--text);
-  border:1px solid var(--border);padding:1rem 1.5rem;
-  border-radius:12px;font-size:1rem;font-weight:600;
-  cursor:pointer;transition:all .2s;width:100%;text-align:center;
-}
+.btn-cta{background:var(--orange);color:#fff;border:none;padding:1rem 1.5rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 0 24px rgba(255,107,0,0.3);width:100%;text-align:center}
+.btn-cta:hover{background:var(--orange2);transform:translateY(-1px)}
+.btn-ghost{background:rgba(255,255,255,0.04);color:var(--text);border:1px solid var(--border);padding:1rem 1.5rem;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;width:100%;text-align:center}
 .btn-ghost:hover{border-color:rgba(255,255,255,0.2);color:var(--white)}
 
-/* ===== SEARCH PANEL ===== */
-.search-panel{
-  background:rgba(10,22,40,0.85);border:1px solid var(--border);
-  border-radius:var(--r);padding:1.25rem;
-  backdrop-filter:blur(16px);
-  position:relative;overflow:hidden;
-}
+/* SEARCH */
+.search-panel{background:rgba(10,22,40,0.85);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;backdrop-filter:blur(16px);position:relative;overflow:hidden}
 .search-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--orange),transparent)}
 .search-panel h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;font-weight:700;color:var(--white);margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.06em}
 .s-row{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.6rem}
-.s-row.one{grid-template-columns:1fr}
 .s-field label{display:block;font-size:0.7rem;font-weight:700;color:var(--text2);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.06em}
-.s-field select,.s-field input{
-  width:100%;padding:0.7rem 0.85rem;
-  border:1px solid var(--border);border-radius:10px;
-  font-size:0.9rem;color:var(--white);
-  background:rgba(255,255,255,0.05);outline:none;
-  -webkit-appearance:none;appearance:none;
-  transition:border .2s;
-}
+.s-field select,.s-field input{width:100%;padding:0.7rem 0.85rem;border:1px solid var(--border);border-radius:10px;font-size:0.9rem;color:var(--white);background:rgba(255,255,255,0.05);outline:none;-webkit-appearance:none;appearance:none;transition:border .2s}
 .s-field select:focus,.s-field input:focus{border-color:var(--orange);background:rgba(255,107,0,0.06)}
 .s-field select option{background:#0d1e35}
-.btn-search{
-  width:100%;background:var(--orange);color:#fff;border:none;
-  padding:0.9rem;border-radius:10px;font-size:0.95rem;
-  font-weight:700;cursor:pointer;margin-top:0.25rem;
-  font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;
-  box-shadow:0 0 16px rgba(255,107,0,0.2);
-}
+.btn-search{width:100%;background:var(--orange);color:#fff;border:none;padding:0.9rem;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:0.25rem;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
 .btn-search:hover{background:var(--orange2)}
 
-/* ===== STATS BAR ===== */
-.stats-bar{
-  background:linear-gradient(90deg,var(--orange),#d94f00);
-  padding:1rem 1.25rem;position:relative;overflow:hidden;
-}
+/* STATS */
+.stats-bar{background:linear-gradient(90deg,var(--orange),#d94f00);padding:1rem 1.25rem;position:relative;overflow:hidden}
 .stats-bar::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,0.04) 0,rgba(255,255,255,0.04) 1px,transparent 1px,transparent 50px)}
 .stats-inner{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;max-width:680px;margin:0 auto;position:relative}
 .stat-num{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;line-height:1}
-.stat-label{font-size:0.72rem;color:rgba(255,255,255,0.85);margin-top:0.15rem;line-height:1.3}
+.stat-label{font-size:0.72rem;color:rgba(255,255,255,0.85);margin-top:0.15rem}
 
-/* ===== FEATURES STRIP ===== */
+/* FEATURES */
 .feat-strip{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.25rem}
 .feat-strip-inner{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;max-width:680px;margin:0 auto}
 .feat-item{display:flex;align-items:center;gap:0.7rem}
@@ -147,7 +85,7 @@ nav{
 .feat-text strong{display:block;font-size:0.82rem;font-weight:700;color:var(--white);line-height:1.2}
 .feat-text span{font-size:0.72rem;color:var(--text2)}
 
-/* ===== SECTIONS ===== */
+/* SECTIONS */
 .sec{padding:2.5rem 1.25rem}
 .sec-alt{background:var(--surface)}
 .wrap{max-width:680px;margin:0 auto}
@@ -159,25 +97,27 @@ nav{
 .sec-title{font-size:1.7rem;font-weight:800;color:var(--white);margin-bottom:0.6rem}
 .sec-sub{font-size:0.9rem;color:var(--text2);line-height:1.7}
 
-/* ===== PROP CARDS ===== */
+/* PROP CARDS */
 .tabs{display:flex;gap:0.35rem;margin-bottom:1.5rem;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{flex-shrink:0;padding:0.5rem 1rem;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;border:none;background:rgba(255,255,255,0.05);color:var(--text2);transition:all .2s;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif}
-.tab.active{background:var(--surface2);color:var(--white);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.tab{flex-shrink:0;padding:0.5rem 1rem;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;border:none;background:rgba(255,255,255,0.05);color:var(--text2);transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
+.tab.active{background:var(--surface2);color:var(--white)}
 .props-grid{display:flex;flex-direction:column;gap:1rem}
 .prop-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .25s}
-.prop-card:active{transform:scale(0.98)}
-.prop-img{height:160px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative}
-.prop-img.casa{background:linear-gradient(135deg,#0d1e35,#162d4a)}
-.prop-img.depto{background:linear-gradient(135deg,#0d2030,#102a3a)}
-.prop-img.campo{background:linear-gradient(135deg,#181b0a,#2a2e10)}
+.prop-card:hover{border-color:rgba(255,107,0,0.3);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,0.3)}
+.prop-img{height:200px;overflow:hidden;position:relative;background:var(--surface2)}
+.prop-img img{width:100%;height:100%;object-fit:cover}
+.prop-img-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem}
 .pbadge{position:absolute;top:10px;font-size:0.65rem;font-weight:800;padding:0.22rem 0.6rem;border-radius:6px;letter-spacing:0.04em;text-transform:uppercase}
 .pbadge.left{left:10px;background:rgba(5,12,26,0.88);color:var(--text);border:1px solid var(--border)}
-.pbadge.right{right:10px;background:var(--orange);color:#fff}
-.pbadge.live-b{background:rgba(255,59,107,0.15);color:var(--live);border:1px solid rgba(255,59,107,0.3);display:flex;align-items:center;gap:0.3rem}
+.pbadge.live-b{right:10px;background:rgba(255,59,107,0.15);color:var(--live);border:1px solid rgba(255,59,107,0.3);display:flex;align-items:center;gap:0.3rem}
 .pbadge.live-b::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--live);animation:pulse 1.5s infinite;flex-shrink:0}
-.pbadge.new-b{background:rgba(0,229,160,0.15);color:var(--success);border:1px solid rgba(0,229,160,0.3)}
-.pbadge.last-b{background:rgba(255,179,71,0.12);color:var(--amber);border:1px solid rgba(255,179,71,0.25)}
+.pbadge.new-b{right:10px;background:rgba(0,229,160,0.15);color:var(--success);border:1px solid rgba(0,229,160,0.3)}
+.pbadge.last-b{right:10px;background:rgba(255,179,71,0.12);color:var(--amber);border:1px solid rgba(255,179,71,0.25)}
+.prop-status-bar{padding:0.4rem 1.1rem;font-size:0.72rem;font-weight:700;text-align:center;letter-spacing:0.04em}
+.prop-status-bar.activa{background:rgba(0,229,160,0.1);color:var(--success)}
+.prop-status-bar.visitas{background:rgba(255,179,71,0.1);color:var(--amber)}
+.prop-status-bar.negociacion{background:rgba(255,107,0,0.1);color:var(--orange)}
 .prop-body{padding:1rem 1.1rem}
 .prop-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:0.2rem}
 .prop-loc{font-size:0.78rem;color:var(--text2);margin-bottom:0.7rem}
@@ -189,24 +129,26 @@ nav{
 .prop-offers{font-size:0.78rem;color:var(--text2);display:flex;align-items:center;gap:0.3rem}
 .prop-offers strong{color:var(--success);font-weight:700}
 .prop-countdown{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.7rem;font-weight:700;color:var(--amber);background:rgba(255,179,71,0.1);border:1px solid rgba(255,179,71,0.2);padding:0.2rem 0.5rem;border-radius:5px}
-.btn-ofertar{background:transparent;color:var(--orange);padding:0.45rem 1rem;border-radius:7px;font-size:0.82rem;font-weight:700;border:1px solid var(--border-o);cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;position:relative;z-index:2}
-.btn-ofertar:hover{background:var(--orange);color:#fff}
+.btn-ofertar{background:var(--orange);color:#fff;padding:0.5rem 1.1rem;border-radius:7px;font-size:0.82rem;font-weight:700;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif}
+.btn-ofertar:hover{background:var(--orange2);box-shadow:0 0 14px rgba(255,107,0,0.3)}
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text2)}
+.empty-state .icon{font-size:3rem;margin-bottom:1rem;opacity:0.4}
 
-/* ===== STEPS ===== */
+/* STEPS */
 .steps-grid{display:flex;flex-direction:column;gap:0.85rem}
 .step-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;display:flex;gap:1rem;align-items:flex-start}
-.step-num{width:38px;height:38px;background:linear-gradient(135deg,var(--orange),#cc4400);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:800;flex-shrink:0;box-shadow:0 0 14px rgba(255,107,0,0.3)}
+.step-num{width:38px;height:38px;background:linear-gradient(135deg,var(--orange),#cc4400);color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:800;flex-shrink:0}
 .step-content h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;font-weight:700;color:var(--white);margin-bottom:0.3rem}
 .step-content p{font-size:0.87rem;color:var(--text2);line-height:1.6}
 
-/* ===== PRICING ===== */
+/* PRICING */
 .tab-btns{display:flex;gap:0.5rem;margin-bottom:1.75rem}
 .tab-btn{flex:1;padding:0.75rem;border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.9rem;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .2s}
 .tab-btn.on{background:var(--orange);color:#fff;border-color:var(--orange);box-shadow:0 0 16px rgba(255,107,0,0.3)}
 .pricing-grid{display:flex;flex-direction:column;gap:1rem}
 .price-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;position:relative}
 .price-card.feat{border-color:rgba(255,107,0,0.4);box-shadow:0 0 30px rgba(255,107,0,0.08)}
-.price-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:0.68rem;font-weight:800;padding:0.25rem 0.9rem;border-radius:100px;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 0 12px rgba(255,107,0,0.4)}
+.price-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:0.68rem;font-weight:800;padding:0.25rem 0.9rem;border-radius:100px;white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif}
 .price-period{font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:0.5rem}
 .price-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:2.2rem;font-weight:800;color:var(--white);margin-bottom:0.2rem}
 .price-val small{font-size:1rem;color:var(--text2);font-weight:500}
@@ -215,18 +157,8 @@ nav{
 .price-feats li{font-size:0.85rem;color:var(--text);padding:0.4rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.5rem}
 .price-feats li:last-child{border:none}
 .ck{color:var(--success);font-weight:800;font-size:0.78rem}
-.btn-full{width:100%;background:var(--orange);color:#fff;border:none;padding:0.95rem;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 0 20px rgba(255,107,0,0.25)}
-.btn-full:hover{background:var(--orange2)}
-.btn-full.sec{background:rgba(255,255,255,0.06);box-shadow:none;border:1px solid var(--border);color:var(--text)}
-.btn-full.sec:hover{border-color:rgba(255,255,255,0.2);color:var(--white)}
 
-/* ===== AHORRO BANNER ===== */
-.ahorro-banner{background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);border-radius:var(--r);padding:1.25rem;margin-top:1.25rem}
-.ahorro-banner h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:var(--success);margin-bottom:0.5rem}
-.ahorro-banner p{font-size:0.87rem;color:var(--text2);line-height:1.65}
-.ahorro-banner strong{color:var(--white)}
-
-/* ===== FAQ ===== */
+/* FAQ */
 .faq-list{max-width:680px;margin:0 auto}
 .faq-item{border-bottom:1px solid var(--border);padding:1.1rem 0}
 .faq-q{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.95rem;font-weight:700;color:var(--white);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;line-height:1.4}
@@ -235,19 +167,7 @@ nav{
 .faq-a{font-size:0.88rem;color:var(--text2);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .35s,padding .3s}
 .faq-item.open .faq-a{max-height:300px;padding-top:0.75rem}
 
-/* ===== GUÍA ===== */
-.guide-grid{display:flex;flex-direction:column;gap:0.85rem}
-.guide-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;border-left:3px solid var(--orange)}
-.guide-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.85rem}
-.guide-num{width:32px;height:32px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;color:#fff;font-size:0.88rem;flex-shrink:0}
-.guide-card h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.92rem;font-weight:700;color:var(--white)}
-.guide-list{list-style:none;padding:0}
-.guide-list li{font-size:0.85rem;color:var(--text2);padding:0.3rem 0;display:flex;gap:0.5rem;border-bottom:1px solid var(--border);line-height:1.5}
-.guide-list li:last-child{border:none}
-.gc{color:var(--success);font-weight:800;flex-shrink:0;margin-top:1px}
-.gs{color:var(--orange);font-weight:800;flex-shrink:0;margin-top:1px}
-
-/* ===== CTA ===== */
+/* CTA */
 .cta-sec{background:var(--surface);padding:3rem 1.25rem;text-align:center;border-top:1px solid var(--border);position:relative;overflow:hidden}
 .cta-sec::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:400px;height:300px;background:radial-gradient(ellipse,rgba(255,107,0,0.08) 0%,transparent 65%);pointer-events:none}
 .cta-sec h2{font-size:1.7rem;font-weight:800;color:var(--white);margin-bottom:0.75rem;position:relative}
@@ -255,30 +175,25 @@ nav{
 .cta-sec p{color:var(--text2);font-size:0.9rem;margin-bottom:1.75rem;line-height:1.7;position:relative}
 .cta-btns{display:flex;flex-direction:column;gap:0.75rem;max-width:360px;margin:0 auto;position:relative}
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 footer{background:#020810;padding:2rem 1.25rem;border-top:1px solid var(--border)}
 .foot-inner{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:1.25rem;align-items:center;text-align:center}
 .foot-links{display:flex;gap:1.5rem;flex-wrap:wrap;justify-content:center}
 .foot-links a{font-size:0.82rem;color:var(--text2);transition:color .2s;cursor:pointer}
 .foot-links a:hover{color:var(--white)}
-.foot-copy{font-size:0.75rem;color:var(--text2)}
 
-/* ===== MODALS ===== */
+/* MODALS */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(2,6,14,0.88);backdrop-filter:blur(8px);z-index:200;align-items:flex-end;justify-content:center;padding:0}
 .modal-overlay.active{display:flex}
-.modal{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:20px 20px 0 0;width:100%;max-width:540px;
-  max-height:92vh;overflow-y:auto;
-  position:relative;
-  box-shadow:0 -20px 60px rgba(0,0,0,0.5);
-}
-.modal::before{content:'';position:absolute;top:10px;left:50%;transform:translateX(-50%);width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15)}
-.modal-header{padding:1.25rem 1.25rem 0.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1;padding-top:1.75rem}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px 20px 0 0;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:0 -20px 60px rgba(0,0,0,0.5)}
+.modal-handle{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin:10px auto 0}
+.modal-header{padding:1.25rem 1.25rem 0.75rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:1}
 .modal-header h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.05rem;font-weight:800;color:var(--white)}
 .modal-close{background:rgba(255,255,255,0.07);border:1px solid var(--border);width:32px;height:32px;border-radius:8px;font-size:1.1rem;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all .2s}
 .modal-close:hover{background:rgba(255,255,255,0.12);color:var(--white)}
 .modal-body{padding:1.25rem}
+
+/* FORMS */
 .step-dots{display:flex;gap:0.4rem;margin-bottom:1rem}
 .step-dot{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,0.1);transition:all .3s}
 .step-dot.act{background:var(--orange);box-shadow:0 0 6px rgba(255,107,0,0.4)}
@@ -299,7 +214,7 @@ textarea.fi{resize:vertical;min-height:80px}
 .tag-cloud{display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.4rem}
 .tag{background:rgba(255,255,255,0.04);color:var(--text2);font-size:0.77rem;padding:0.28rem 0.65rem;border-radius:100px;cursor:pointer;transition:all .2s;border:1px solid var(--border)}
 .tag.selected{background:rgba(255,107,0,0.14);color:var(--orange);border-color:var(--border-o)}
-.upload-z{border:1px dashed rgba(255,255,255,0.12);border-radius:12px;padding:1.25rem;text-align:center;position:relative;background:rgba(255,255,255,0.02);transition:border-color .2s,background .2s}
+.upload-z{border:1px dashed rgba(255,255,255,0.12);border-radius:12px;padding:1.25rem;text-align:center;position:relative;background:rgba(255,255,255,0.02);transition:border-color .2s,background .2s;cursor:pointer}
 .upload-z:hover{border-color:var(--orange);background:rgba(255,107,0,0.04)}
 .upload-z input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .upload-z p{font-size:0.85rem;color:var(--text2)}
@@ -311,34 +226,70 @@ textarea.fi{resize:vertical;min-height:80px}
 .pinfo p{font-size:0.83rem;color:var(--text2);line-height:1.6}
 .form-btns{display:flex;gap:0.6rem;margin-top:1rem}
 .btn-prev{flex:1;background:rgba(255,255,255,0.05);color:var(--text);padding:0.85rem;border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;border:1px solid var(--border);transition:all .2s}
-.btn-next{flex:2;background:var(--orange);color:#fff;padding:0.85rem;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif;box-shadow:0 0 14px rgba(255,107,0,0.25)}
+.btn-next{flex:2;background:var(--orange);color:#fff;padding:0.85rem;border-radius:10px;font-size:0.9rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
 .btn-next:hover{background:var(--orange2)}
+.btn-next:disabled{opacity:0.6;cursor:not-allowed}
 .btn-submit{width:100%;background:var(--orange);color:#fff;border:none;padding:1rem;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 0 20px rgba(255,107,0,0.25);margin-top:0.6rem}
 .btn-submit:hover{background:var(--orange2)}
+.btn-submit:disabled{opacity:0.6;cursor:not-allowed}
 .form-note{font-size:0.75rem;color:var(--text2);text-align:center;margin-top:0.75rem;line-height:1.6}
 .al-ok{display:none;background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.25);border-radius:10px;padding:0.9rem 1rem;color:var(--success);font-size:0.87rem;margin-bottom:1rem;font-weight:600}
 .al-er{display:none;background:rgba(255,59,107,0.08);border:1px solid rgba(255,59,107,0.25);border-radius:10px;padding:0.9rem 1rem;color:var(--live);font-size:0.87rem;margin-bottom:1rem;font-weight:600}
 
-/* ===== PAGES (legal) ===== */
+/* DASHBOARD PANEL */
+.dashboard{display:none;padding:1.5rem 1.25rem;max-width:680px;margin:0 auto}
+.dashboard.active{display:block}
+.dash-tabs{display:flex;gap:0.35rem;margin-bottom:1.5rem;overflow-x:auto;scrollbar-width:none}
+.dash-tabs::-webkit-scrollbar{display:none}
+.dash-tab{flex-shrink:0;padding:0.5rem 1rem;border-radius:8px;font-size:0.82rem;font-weight:600;cursor:pointer;border:none;background:rgba(255,255,255,0.05);color:var(--text2);transition:all .2s;font-family:'Plus Jakarta Sans',sans-serif}
+.dash-tab.active{background:var(--surface2);color:var(--white)}
+.dash-section{display:none}.dash-section.active{display:block}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:0.85rem}
+.dash-card h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.9rem;font-weight:700;color:var(--white);margin-bottom:0.5rem}
+.dash-card p{font-size:0.83rem;color:var(--text2);line-height:1.6}
+.oferta-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:0.75rem}
+.oferta-monto{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;color:var(--orange)}
+.oferta-meta{font-size:0.78rem;color:var(--text2);margin-top:0.25rem}
+.oferta-horizonte{display:inline-block;font-size:0.7rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:5px;background:rgba(0,229,160,0.1);color:var(--success);border:1px solid rgba(0,229,160,0.2);margin-top:0.5rem}
+.status-badge{display:inline-flex;align-items:center;gap:0.3rem;font-size:0.7rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:5px;text-transform:uppercase;letter-spacing:0.04em}
+.status-badge.pendiente{background:rgba(255,179,71,0.1);color:var(--amber);border:1px solid rgba(255,179,71,0.2)}
+.status-badge.activa{background:rgba(0,229,160,0.1);color:var(--success);border:1px solid rgba(0,229,160,0.2)}
+.status-badge.vendida{background:rgba(255,107,0,0.1);color:var(--orange);border:1px solid var(--border-o)}
+
+/* ADMIN */
+.admin-prop-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:0.75rem;display:flex;gap:0.75rem;align-items:flex-start}
+.admin-prop-info{flex:1}
+.admin-prop-info h4{font-family:'Plus Jakarta Sans',sans-serif;font-size:0.88rem;font-weight:700;color:var(--white)}
+.admin-prop-info p{font-size:0.78rem;color:var(--text2);margin-top:0.2rem}
+.admin-btns{display:flex;gap:0.4rem;flex-shrink:0}
+.btn-approve{background:var(--success);color:#000;border:none;padding:0.4rem 0.75rem;border-radius:7px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all .2s}
+.btn-reject{background:rgba(255,59,107,0.15);color:var(--live);border:1px solid rgba(255,59,107,0.3);padding:0.4rem 0.75rem;border-radius:7px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all .2s}
+
+/* PAGES */
 .page{display:none;padding:2rem 1.25rem 3rem;max-width:680px;margin:0 auto}
 .page.active{display:block}
 .page h2{font-size:1.6rem;font-weight:800;color:var(--white);margin-bottom:0.4rem}
 .page h3{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:var(--white);font-size:1rem;margin:1.25rem 0 0.4rem}
 .page p{font-size:0.9rem;color:var(--text2);line-height:1.75;margin-bottom:0.75rem}
 
-/* ===== CONTACT ===== */
-.contact-grid{display:flex;flex-direction:column;gap:1.75rem}
-.c-item{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem}
-.c-icon{width:36px;height:36px;background:rgba(255,107,0,0.1);border:1px solid var(--border-o);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-.c-item strong{display:block;font-size:0.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em}
-.c-item span{font-size:0.88rem;color:var(--white)}
+/* LOADER */
+.loader{display:flex;align-items:center;justify-content:center;padding:3rem;color:var(--text2);font-size:0.9rem;gap:0.5rem}
+.spinner{width:20px;height:20px;border:2px solid rgba(255,107,0,0.2);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* ===== TABLET/DESKTOP ===== */
+/* AHORRO */
+.ahorro-banner{background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);border-radius:var(--r);padding:1.25rem;margin-top:1.25rem}
+.ahorro-banner h3{font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:var(--success);margin-bottom:0.5rem}
+.ahorro-banner p{font-size:0.87rem;color:var(--text2);line-height:1.65}
+.ahorro-banner strong{color:var(--white)}
+
+/* TABLET/DESKTOP */
 @media(min-width:600px){
   nav{height:68px;padding:0 2rem}
   .nav-links{display:flex;align-items:center;gap:0.5rem}
   .nav-links button{color:var(--text2);font-size:0.85rem;font-weight:500;background:none;border:none;cursor:pointer;padding:0.4rem 0.85rem;border-radius:7px;transition:all .2s}
   .nav-links button:hover{color:var(--white);background:rgba(255,255,255,0.06)}
+  .nav-user-name{display:block}
   .hero{padding:3rem 2rem 3.5rem}
   .hero h1{font-size:2.8rem}
   .hero-btns{flex-direction:row}
@@ -350,34 +301,29 @@ textarea.fi{resize:vertical;min-height:80px}
   .props-grid{display:grid;grid-template-columns:repeat(2,1fr)}
   .steps-grid-d{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
   .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr)}
-  .guide-grid{display:grid;grid-template-columns:1fr 1fr}
-  .contact-grid{display:grid;grid-template-columns:1fr 1fr}
-  .modal-overlay{align-items:center;padding:1rem}
-  .modal{border-radius:20px;max-width:600px}
-  .modal::before{display:none}
-  .modal-header{padding-top:1.25rem}
-  .f2{gap:0.75rem}
   .cta-btns{flex-direction:row;justify-content:center;max-width:none}
   .foot-inner{flex-direction:row;text-align:left;align-items:center}
   .sec-title{font-size:2rem}
-  .hero-inner{max-width:900px}
+  .modal-overlay{align-items:center;padding:1rem}
+  .modal{border-radius:20px;max-width:600px}
+  .modal-handle{display:none}
+  .f2{gap:0.75rem}
 }
 @media(min-width:900px){
   .hero{padding:4rem 5% 4rem}
   .hero-inner{display:grid;grid-template-columns:1.1fr 0.9fr;gap:4rem;align-items:center;max-width:1100px;margin:0 auto}
-  .hero-btns{flex-direction:row}
   .hero h1{font-size:3.2rem}
   .wrap{max-width:1100px}
   .sec{padding:5rem 5%}
   .stats-inner,.feat-strip-inner{max-width:1100px}
   .props-grid{grid-template-columns:repeat(3,1fr)}
+  .dashboard{max-width:900px}
 }
 </style>
 </head>
 <body>
-
 <nav>
-  <div class="logo" onclick="showMain()" style="cursor:pointer">
+  <div class="logo" onclick="navGo('inicio')">
     <div class="logo-mark">R</div>
     <div class="logo-text">Remata<em>Tu</em>Propiedad<em style="color:var(--text2);font-style:normal;font-weight:400">.cl</em></div>
   </div>
@@ -387,57 +333,60 @@ textarea.fi{resize:vertical;min-height:80px}
     <button onclick="navGo('preciosSec')">Precios</button>
   </div>
   <div class="nav-actions">
-    <button class="btn-ol" onclick="openModal('loginModal')">Ingresar</button>
-    <button class="btn-or" onclick="openModal('registerModal')">Publicar</button>
+    <div id="navGuest" style="display:flex;gap:0.5rem">
+      <button class="btn-ol" onclick="openModal('loginModal')">Ingresar</button>
+      <button class="btn-or" onclick="openModal('registerModal')">Publicar</button>
+    </div>
+    <div id="navUser" style="display:none;align-items:center;gap:0.5rem">
+      <span class="nav-user-name" id="navUserName"></span>
+      <div class="btn-icon notif-badge" onclick="openModal('notifModal')" title="Notificaciones">
+        🔔<span class="notif-count" id="notifCount" style="display:none">0</span>
+      </div>
+      <button class="btn-ol" onclick="showDashboard()">Mi panel</button>
+      <button class="btn-icon" onclick="logout()" title="Cerrar sesión">🚪</button>
+    </div>
   </div>
 </nav>
 
+<!-- CONTENIDO PRINCIPAL -->
 <div id="mainContent">
 
-<!-- HERO -->
-<section class="hero">
+<section class="hero" id="inicio">
   <div class="hero-grid"></div>
   <div class="hero-inner">
     <div>
       <div class="hero-badge">🔴 Plataforma activa en Chile</div>
       <h1>Vende tu propiedad<span class="acc">sin corredor.</span></h1>
-      <p class="hero-sub">Publica tu propiedad, recibe ofertas de compradores verificados y ahorra hasta <strong>$7 millones</strong> en comisiones de corredor. Sin intermediarios.</p>
+      <p class="hero-sub">Publica tu propiedad, recibe ofertas de compradores verificados y ahorra hasta <strong>$7 millones</strong> en comisiones de corredor.</p>
       <div class="hero-btns">
         <button class="btn-cta" onclick="openModal('publishModal')">📋 Publicar mi propiedad</button>
         <button class="btn-ghost" onclick="navGo('propsSec')">Ver propiedades →</button>
       </div>
     </div>
-    <!-- SEARCH PANEL -->
     <div class="search-panel">
       <h3>🔍 Buscar propiedades</h3>
       <div class="s-row">
         <div class="s-field"><label>Región</label><select id="searchRegion" onchange="updateComunas('searchRegion','searchComuna')"><option value="">Todas</option><option>Arica y Parinacota</option><option>Tarapacá</option><option>Antofagasta</option><option>Atacama</option><option>Coquimbo</option><option>Valparaíso</option><option>Metropolitana</option><option>O'Higgins</option><option>Maule</option><option>Ñuble</option><option>Biobío</option><option>Araucanía</option><option>Los Ríos</option><option>Los Lagos</option><option>Aysén</option><option>Magallanes</option></select></div>
-        <div class="s-field"><label>Movimiento</label><select><option>Venta y arriendo</option><option>Venta</option><option>Arriendo</option></select></div>
+        <div class="s-field"><label>Movimiento</label><select id="searchMov"><option value="">Todo</option><option value="venta">Venta</option><option value="arriendo">Arriendo</option></select></div>
       </div>
       <div class="s-row">
-        <div class="s-field"><label>Tipo</label><select><option value="">Todos</option><option>Casa</option><option>Departamento</option><option>Terreno</option><option>Parcela</option><option>Oficina</option><option>Local</option></select></div>
+        <div class="s-field"><label>Tipo</label><select id="searchTipo"><option value="">Todos</option><option>Casa</option><option>Departamento</option><option>Terreno</option><option>Parcela</option><option>Oficina</option><option>Local</option></select></div>
         <div class="s-field"><label>Comuna</label><select id="searchComuna"><option value="">Todas</option></select></div>
       </div>
-      <div class="s-row">
-        <div class="s-field"><label>Precio máx.</label><select><option value="">Sin límite</option><option>Hasta UF 1.000</option><option>Hasta UF 2.000</option><option>Hasta UF 3.500</option><option>Hasta UF 5.000</option><option>Hasta UF 10.000</option></select></div>
-        <div class="s-field"><label>Dormitorios</label><select><option value="">Cualquiera</option><option>1+</option><option>2+</option><option>3+</option><option>4+</option></select></div>
-      </div>
-      <button class="btn-search">Buscar propiedades →</button>
+      <button class="btn-search" onclick="buscarPropiedades()">Buscar propiedades →</button>
     </div>
   </div>
 </section>
 
-<!-- FEATURES -->
 <div class="feat-strip">
   <div class="feat-strip-inner">
-    <div class="feat-item"><div class="feat-icon">🔒</div><div class="feat-text"><strong>Compradores verificados</strong><span>RUT + documentos</span></div></div>
+    <div class="feat-item"><div class="feat-icon">🔒</div><div class="feat-text"><strong>Compradores verificados</strong><span>Correo + teléfono</span></div></div>
     <div class="feat-item"><div class="feat-icon">💸</div><div class="feat-text"><strong>0% comisión</strong><span>Solo pagas la publicación</span></div></div>
     <div class="feat-item"><div class="feat-icon">⚡</div><div class="feat-text"><strong>Primera oferta 48 hrs</strong><span>Promedio plataforma</span></div></div>
     <div class="feat-item"><div class="feat-icon">📊</div><div class="feat-text"><strong>Panel en tiempo real</strong><span>Todas tus ofertas</span></div></div>
   </div>
 </div>
 
-<!-- STATS -->
 <div class="stats-bar">
   <div class="stats-inner">
     <div><div class="stat-num">0%</div><div class="stat-label">Comisión al vendedor</div></div>
@@ -449,60 +398,31 @@ textarea.fi{resize:vertical;min-height:80px}
 
 <!-- PROPIEDADES -->
 <div class="sec" id="propsSec"><div class="wrap">
-  <div class="sec-center"><div class="sec-tag orng">Publicaciones activas</div><h2 class="sec-title">Propiedades disponibles</h2><p class="sec-sub">Regístrate gratis para ver el detalle completo y hacer tu oferta.</p></div>
+  <div class="sec-center"><div class="sec-tag orng">Publicaciones activas</div><h2 class="sec-title">Propiedades disponibles</h2><p class="sec-sub">Regístrate gratis para hacer tu oferta directamente al propietario.</p></div>
   <div class="tabs">
-    <button class="tab active" onclick="setTab(this)">Todas</button>
-    <button class="tab" onclick="setTab(this)">Venta</button>
-    <button class="tab" onclick="setTab(this)">Arriendo</button>
-    <button class="tab" onclick="setTab(this)">Casas</button>
-    <button class="tab" onclick="setTab(this)">Deptos</button>
-    <button class="tab" onclick="setTab(this)">Terrenos</button>
+    <button class="tab active" onclick="filtrarProps(this,'')">Todas</button>
+    <button class="tab" onclick="filtrarProps(this,'venta')">Venta</button>
+    <button class="tab" onclick="filtrarProps(this,'arriendo')">Arriendo</button>
+    <button class="tab" onclick="filtrarProps(this,'Casa')">Casas</button>
+    <button class="tab" onclick="filtrarProps(this,'Departamento')">Deptos</button>
+    <button class="tab" onclick="filtrarProps(this,'Terreno')">Terrenos</button>
   </div>
-  <div class="props-grid">
-    <div class="prop-card" onclick="openModal('ofertaModal')">
-      <div class="prop-img casa">🏠<div class="pbadge left">VENTA</div><div class="pbadge right live-b">EN VIVO</div></div>
-      <div class="prop-body">
-        <div class="prop-title">Casa 4D / 3B — San Pedro de la Paz</div>
-        <div class="prop-loc">📍 Sector Laguna Grande, Biobío</div>
-        <div class="prop-price">UF 5.800</div><div class="prop-price-sub">≈ $223.000.000</div>
-        <div class="prop-tags"><span class="prop-tag">280 m²</span><span class="prop-tag">Jardín</span><span class="prop-tag">Garage 2 autos</span><span class="prop-tag">Alarma</span></div>
-      </div>
-      <div class="prop-footer"><div class="prop-offers">🔔 <strong>4 ofertas</strong></div><div class="prop-countdown">⏳ 45 días</div><button class="btn-ofertar" onclick="event.stopPropagation();openModal('ofertaModal')">Ofertar</button></div>
-    </div>
-    <div class="prop-card" onclick="openModal('ofertaModal')">
-      <div class="prop-img depto">🏢<div class="pbadge left">ARRIENDO</div><div class="pbadge right new-b">NUEVO</div></div>
-      <div class="prop-body">
-        <div class="prop-title">Depto 2D / 2B — Providencia</div>
-        <div class="prop-loc">📍 Av. Providencia, Santiago</div>
-        <div class="prop-price" style="font-size:1.25rem">$680.000<span style="font-size:0.78rem;color:var(--text2)">/mes</span></div><div class="prop-price-sub">1 mes garantía · Amoblado</div>
-        <div class="prop-tags"><span class="prop-tag">68 m²</span><span class="prop-tag">Piscina</span><span class="prop-tag">Gym</span><span class="prop-tag">Metro 200m</span></div>
-      </div>
-      <div class="prop-footer"><div class="prop-offers">🔔 <strong>9 ofertas</strong></div><div class="prop-countdown">⏳ 22 días</div><button class="btn-ofertar" onclick="event.stopPropagation();openModal('ofertaModal')">Ofertar</button></div>
-    </div>
-    <div class="prop-card" onclick="openModal('ofertaModal')">
-      <div class="prop-img campo">🌿<div class="pbadge left">VENTA</div><div class="pbadge right last-b">ÚLTIMOS DÍAS</div></div>
-      <div class="prop-body">
-        <div class="prop-title">Parcela 8.500 m² con casa</div>
-        <div class="prop-loc">📍 Camino a Molina km 3, Maule</div>
-        <div class="prop-price">UF 2.400</div><div class="prop-price-sub">≈ $92.000.000</div>
-        <div class="prop-tags"><span class="prop-tag">8.500 m²</span><span class="prop-tag">Casa 80 m²</span><span class="prop-tag">Agua potable</span><span class="prop-tag">Acceso pav.</span></div>
-      </div>
-      <div class="prop-footer"><div class="prop-offers">🔔 <strong>2 ofertas</strong></div><div class="prop-countdown">⏳ 5 días</div><button class="btn-ofertar" onclick="event.stopPropagation();openModal('ofertaModal')">Ofertar</button></div>
-    </div>
+  <div id="propsContainer" class="props-grid">
+    <div class="loader"><div class="spinner"></div> Cargando propiedades...</div>
   </div>
-  <div style="text-align:center;margin-top:1.75rem"><button class="btn-full" style="max-width:280px">Ver todas las propiedades →</button></div>
+  <div style="text-align:center;margin-top:1.75rem"><button class="btn-cta" style="max-width:280px;width:100%" onclick="cargarMasPropiedades()">Ver más propiedades →</button></div>
 </div></div>
 
-<!-- CÓMO FUNCIONA -->
+<!-- COMO FUNCIONA -->
 <div class="sec sec-alt" id="comoSec"><div class="wrap">
   <div class="sec-center"><div class="sec-tag blue">Proceso</div><h2 class="sec-title">¿Cómo funciona?</h2><p class="sec-sub">En pocos pasos tu propiedad recibe ofertas reales — sin intermediarios.</p></div>
   <div class="steps-grid steps-grid-d">
-    <div class="step-card"><div class="step-num">1</div><div class="step-content"><h3>Regístrate gratis</h3><p>Crea tu cuenta con nombre, RUT, teléfono y correo. Verificamos tu identidad para mantener la plataforma segura.</p></div></div>
-    <div class="step-card"><div class="step-num">2</div><div class="step-content"><h3>Publica tu propiedad</h3><p>Sube hasta 60 fotos y 2 videos, describe las características y define la fecha de cierre de ofertas.</p></div></div>
-    <div class="step-card"><div class="step-num">3</div><div class="step-content"><h3>Recibe ofertas</h3><p>Cuando alguien oferta te avisamos al instante. Ves el nombre, la oferta y los documentos del interesado.</p></div></div>
-    <div class="step-card"><div class="step-num">4</div><div class="step-content"><h3>Elige con quién avanzar</h3><p>Selecciona los ofertantes que más te convencen y coordina visitas directamente, sin intermediarios.</p></div></div>
-    <div class="step-card"><div class="step-num">5</div><div class="step-content"><h3>Cierra el trato</h3><p>Negocia directo. Si no hay acuerdo, reactiva con una nueva renovación trimestral a menor precio.</p></div></div>
-    <div class="step-card"><div class="step-num" style="background:linear-gradient(135deg,var(--success),#00a070)">6</div><div class="step-content"><h3>Ahorra millones</h3><p>Sin corredores ni comisiones. En una propiedad de UF 4.000 puedes ahorrar hasta <strong style="color:var(--success)">$7 millones</strong>.</p></div></div>
+    <div class="step-card"><div class="step-num">1</div><div class="step-content"><h3>Regístrate gratis</h3><p>Crea tu cuenta con nombre, RUT, teléfono y correo. Recibirás un email de confirmación.</p></div></div>
+    <div class="step-card"><div class="step-num">2</div><div class="step-content"><h3>Publica tu propiedad</h3><p>Sube hasta 60 fotos y 2 videos, describe las características y define la fecha de cierre.</p></div></div>
+    <div class="step-card"><div class="step-num">3</div><div class="step-content"><h3>Recibe ofertas</h3><p>Te avisamos por correo cada vez que alguien hace una oferta. Ves nombre, monto y documentos.</p></div></div>
+    <div class="step-card"><div class="step-num">4</div><div class="step-content"><h3>Elige con quién avanzar</h3><p>Selecciona los ofertantes que más te convencen y coordina visitas directamente.</p></div></div>
+    <div class="step-card"><div class="step-num">5</div><div class="step-content"><h3>Cierra el trato</h3><p>Negocia directo. Si no hay acuerdo, reactiva con una nueva renovación trimestral.</p></div></div>
+    <div class="step-card"><div class="step-num" style="background:linear-gradient(135deg,var(--success),#00a070)">6</div><div class="step-content"><h3>Ahorra millones</h3><p>Sin corredores ni comisiones. En UF 4.000 puedes ahorrar hasta <strong style="color:var(--success)">$7 millones</strong>.</p></div></div>
   </div>
 </div></div>
 
@@ -514,19 +434,16 @@ textarea.fi{resize:vertical;min-height:80px}
     <button id="tabArriendo" class="tab-btn" onclick="showPricing('arriendo')">🔑 Arriendo</button>
   </div>
   <div id="pricingVenta" class="pricing-grid">
-    <div class="price-card"><div class="price-period">Primer trimestre</div><div class="price-val"><small>$</small>69.990</div><div class="price-desc">Para comenzar a recibir ofertas de compradores</div><ul class="price-feats"><li><span class="ck">✓</span> Publicación 90 días</li><li><span class="ck">✓</span> Hasta 60 fotos + 2 videos</li><li><span class="ck">✓</span> Notificaciones por correo</li><li><span class="ck">✓</span> Compradores verificados</li><li><span class="ck">✓</span> Panel de control</li></ul><button class="btn-full" onclick="openModal('publishModal')">Publicar ahora</button></div>
-    <div class="price-card feat"><div class="price-badge">⭐ Más elegido</div><div class="price-period">Segunda renovación</div><div class="price-val"><small>$</small>49.990</div><div class="price-desc">Si necesitas 3 meses más para cerrar</div><ul class="price-feats"><li><span class="ck">✓</span> Renovación 90 días</li><li><span class="ck">✓</span> Historial de ofertas</li><li><span class="ck">✓</span> Cierre anticipado</li><li><span class="ck">✓</span> Reactivación disponible</li><li><span class="ck">✓</span> Todo lo del plan inicial</li></ul><button class="btn-full">Renovar publicación</button></div>
-    <div class="price-card"><div class="price-period">Tercera renovación</div><div class="price-val"><small>$</small>29.990</div><div class="price-desc">El precio más conveniente</div><ul class="price-feats"><li><span class="ck">✓</span> Renovación 90 días más</li><li><span class="ck">✓</span> Prioridad en búsquedas</li><li><span class="ck">✓</span> Soporte prioritario</li><li><span class="ck">✓</span> Sin comisión final</li><li><span class="ck">✓</span> Todo lo anterior</li></ul><button class="btn-full sec">Renovar publicación</button></div>
+    <div class="price-card"><div class="price-period">Primer trimestre</div><div class="price-val"><small>$</small>69.990</div><div class="price-desc">Para comenzar a recibir ofertas</div><ul class="price-feats"><li><span class="ck">✓</span> Publicación 90 días</li><li><span class="ck">✓</span> Hasta 60 fotos + 2 videos</li><li><span class="ck">✓</span> Correos automáticos de ofertas</li><li><span class="ck">✓</span> Compradores verificados</li><li><span class="ck">✓</span> Panel de control</li></ul><button class="btn-submit" onclick="openModal('publishModal')">Publicar ahora</button></div>
+    <div class="price-card feat"><div class="price-badge">⭐ Más elegido</div><div class="price-period">Segunda renovación</div><div class="price-val"><small>$</small>49.990</div><div class="price-desc">Si necesitas 3 meses más</div><ul class="price-feats"><li><span class="ck">✓</span> Renovación 90 días</li><li><span class="ck">✓</span> Historial de ofertas</li><li><span class="ck">✓</span> Cierre anticipado</li><li><span class="ck">✓</span> Todo lo del plan inicial</li></ul><button class="btn-submit">Renovar publicación</button></div>
+    <div class="price-card"><div class="price-period">Tercera renovación</div><div class="price-val"><small>$</small>29.990</div><div class="price-desc">El precio más conveniente</div><ul class="price-feats"><li><span class="ck">✓</span> Renovación 90 días</li><li><span class="ck">✓</span> Prioridad en búsquedas</li><li><span class="ck">✓</span> Sin comisión final</li><li><span class="ck">✓</span> Todo lo anterior</li></ul><button class="btn-submit sec" style="background:rgba(255,255,255,0.05);box-shadow:none;border:1px solid var(--border);color:var(--text)">Renovar</button></div>
   </div>
   <div id="pricingArriendo" class="pricing-grid" style="display:none">
-    <div class="price-card"><div class="price-period">Primer trimestre</div><div class="price-val"><small>$</small>19.990</div><div class="price-desc">Para comenzar a recibir postulantes</div><ul class="price-feats"><li><span class="ck">✓</span> Publicación 90 días</li><li><span class="ck">✓</span> Hasta 60 fotos + 2 videos</li><li><span class="ck">✓</span> Notificaciones por correo</li><li><span class="ck">✓</span> Postulantes verificados</li><li><span class="ck">✓</span> Panel de control</li></ul><button class="btn-full" onclick="openModal('publishModal')">Publicar ahora</button></div>
-    <div class="price-card feat"><div class="price-badge">⭐ Más elegido</div><div class="price-period">Segunda renovación</div><div class="price-val"><small>$</small>14.990</div><div class="price-desc">Si necesitas más tiempo</div><ul class="price-feats"><li><span class="ck">✓</span> Renovación 90 días</li><li><span class="ck">✓</span> Historial de postulantes</li><li><span class="ck">✓</span> Cierre anticipado</li><li><span class="ck">✓</span> Todo lo del plan inicial</li></ul><button class="btn-full">Renovar</button></div>
-    <div class="price-card"><div class="price-period">Tercera renovación</div><div class="price-val"><small>$</small>9.990</div><div class="price-desc">Precio especial</div><ul class="price-feats"><li><span class="ck">✓</span> Renovación 90 días</li><li><span class="ck">✓</span> Prioridad en búsquedas</li><li><span class="ck">✓</span> Todo lo anterior</li></ul><button class="btn-full sec">Renovar</button></div>
+    <div class="price-card"><div class="price-period">Primer trimestre</div><div class="price-val"><small>$</small>19.990</div><div class="price-desc">Para comenzar a recibir postulantes</div><ul class="price-feats"><li><span class="ck">✓</span> Publicación 90 días</li><li><span class="ck">✓</span> Hasta 60 fotos + 2 videos</li><li><span class="ck">✓</span> Correos automáticos</li><li><span class="ck">✓</span> Postulantes verificados</li></ul><button class="btn-submit" onclick="openModal('publishModal')">Publicar ahora</button></div>
+    <div class="price-card feat"><div class="price-badge">⭐ Más elegido</div><div class="price-period">Segunda renovación</div><div class="price-val"><small>$</small>14.990</div><div class="price-desc">Si necesitas más tiempo</div><ul class="price-feats"><li><span class="ck">✓</span> Renovación 90 días</li><li><span class="ck">✓</span> Historial de postulantes</li><li><span class="ck">✓</span> Todo lo inicial</li></ul><button class="btn-submit">Renovar</button></div>
+    <div class="price-card"><div class="price-period">Tercera renovación</div><div class="price-val"><small>$</small>9.990</div><div class="price-desc">Precio especial</div><ul class="price-feats"><li><span class="ck">✓</span> Renovación 90 días</li><li><span class="ck">✓</span> Prioridad búsquedas</li></ul><button class="btn-submit sec" style="background:rgba(255,255,255,0.05);box-shadow:none;border:1px solid var(--border);color:var(--text)">Renovar</button></div>
   </div>
-  <div class="ahorro-banner">
-    <h3>💰 Ahorro real vs corredor tradicional</h3>
-    <p>Un corredor cobra entre <strong>2% y 3%</strong> de comisión. En una propiedad de <strong>UF 4.000 (~$154M)</strong> eso son entre <strong>$3M y $5M</strong> que te ahorras publicando en RematatuPropiedad.cl por solo $69.990.</p>
-  </div>
+  <div class="ahorro-banner"><h3>💰 Ahorro real vs corredor tradicional</h3><p>Un corredor cobra entre <strong>2% y 3%</strong> de comisión. En una propiedad de <strong>UF 4.000 (~$154M)</strong> eso son entre <strong>$3M y $5M</strong> que te ahorras publicando en RematatuPropiedad.cl por solo $69.990.</p></div>
 </div></div>
 
 <!-- FAQ -->
@@ -534,350 +451,857 @@ textarea.fi{resize:vertical;min-height:80px}
   <div class="sec-center"><div class="sec-tag blue">Preguntas frecuentes</div><h2 class="sec-title">¿Tienes dudas?</h2></div>
   <div class="faq-list">
     <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Realmente no pago comisión al vender? <span class="faq-icon">+</span></div><div class="faq-a">Correcto. Solo pagas la tarifa de publicación ($49.990–$69.990). No hay porcentaje sobre la venta ni ningún cobro adicional al cerrar el trato.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Cómo sé que los compradores son reales? <span class="faq-icon">+</span></div><div class="faq-a">Todos los que hacen una oferta deben ingresar su RUT y subir documentos de respaldo (liquidaciones, carta de pre-aprobación bancaria, etc.). Eso filtra a quienes no tienen capacidad de compra real.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Qué pasa si no vendo en 3 meses? <span class="faq-icon">+</span></div><div class="faq-a">Puedes renovar tu publicación por otro trimestre a precio reducido ($49.990 y luego $29.990). Si tras 9 meses no se concreta, te recomendamos ajustar el precio en base a las ofertas recibidas.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Puedo publicar si tengo hipoteca pendiente? <span class="faq-icon">+</span></div><div class="faq-a">Sí. Muchas propiedades se venden con hipoteca vigente. Debes indicar en la descripción que el precio incluye el alzamiento del crédito, y coordinar con tu banco el prepago.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Necesito un notario para cerrar? <span class="faq-icon">+</span></div><div class="faq-a">Sí. La compraventa en Chile requiere escritura pública ante notario e inscripción en el CBR. La plataforma conecta al comprador y vendedor — el proceso legal lo gestionan las partes.</div></div>
-    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Puedo publicar venta y arriendo al mismo tiempo? <span class="faq-icon">+</span></div><div class="faq-a">Sí. Puedes elegir la modalidad que prefieras — venta, arriendo, o ambas simultáneamente. Cada modalidad tiene su propio precio y proceso de ofertas independiente.</div></div>
-  </div>
-</div></div>
-
-<!-- GUÍA -->
-<div class="sec" id="guiaSec"><div class="wrap">
-  <div class="sec-center"><div class="sec-tag orng">Recursos</div><h2 class="sec-title">Guía para propietarios</h2><p class="sec-sub">Todo lo que necesitas saber para vender o arrendar con éxito.</p></div>
-  <div class="tab-btns">
-    <button id="tabGuiaVenta" class="tab-btn on" onclick="showGuia('venta')">🏠 Vender</button>
-    <button id="tabGuiaArriendo" class="tab-btn" onclick="showGuia('arriendo')">🔑 Arrendar</button>
-  </div>
-  <div id="guiaVenta" class="guide-grid">
-    <div class="guide-card"><div class="guide-header"><div class="guide-num">1</div><h3>Prepara tu propiedad</h3></div><ul class="guide-list"><li><span class="gc">✓</span> Despersonaliza y ordena los espacios</li><li><span class="gc">✓</span> Pinta si hay paredes deterioradas</li><li><span class="gc">✓</span> Repara desperfectos visibles</li><li><span class="gc">✓</span> Saca fotos con buena luz natural</li><li><span class="gs">★</span> <span>Te entregamos checklist de fotos al publicar</span></li></ul></div>
-    <div class="guide-card"><div class="guide-header"><div class="guide-num">2</div><h3>Define el precio</h3></div><ul class="guide-list"><li><span class="gc">✓</span> Revisa propiedades similares en el sector</li><li><span class="gc">✓</span> Consulta a un tasador si tienes dudas</li><li><span class="gc">✓</span> Define precio mínimo aceptable</li><li><span class="gc">✓</span> Considera gastos de escritura (~1.5%)</li><li><span class="gs">★</span> <span>El mercado premia precios justos vs inflados</span></li></ul></div>
-    <div class="guide-card"><div class="guide-header"><div class="guide-num">3</div><h3>Evalúa las ofertas</h3></div><ul class="guide-list"><li><span class="gc">✓</span> Lee los documentos del ofertante</li><li><span class="gc">✓</span> Verifica carta pre-aprobación bancaria</li><li><span class="gc">✓</span> Coordina visitas con los más interesados</li><li><span class="gc">✓</span> Puedes contraproponer precios</li><li><span class="gs">★</span> <span>Ves toda la información sin intermediario</span></li></ul></div>
-    <div class="guide-card"><div class="guide-header"><div class="guide-num">4</div><h3>Cierra y escritura</h3></div><ul class="guide-list"><li><span class="gc">✓</span> Firma promesa de compraventa</li><li><span class="gc">✓</span> Coordina alzamiento de hipoteca si aplica</li><li><span class="gc">✓</span> Escritura pública ante notario</li><li><span class="gc">✓</span> Inscripción en el CBR</li><li><span class="gs">★</span> <span>Próximamente: red de abogados con tarifa preferencial</span></li></ul></div>
-  </div>
-  <div id="guiaArriendo" class="guide-grid" style="display:none">
-    <div class="guide-card"><div class="guide-header"><div class="guide-num">1</div><h3>Prepara la propiedad</h3></div><ul class="guide-list"><li><span class="gc">✓</span> Limpia y pinta si es necesario</li><li><span class="gc">✓</span> Verifica artefactos (cocina, calefón)</li><li><span class="gc">✓</span> Saca fotos con buena luz</li><li><span class="gc">✓</span> Decide si arriendas amoblado o no</li></ul></div>
-    <div class="guide-card"><div class="guide-header"><div class="guide-num">2</div><h3>Define precio y condiciones</h3></div><ul class="guide-list"><li><span class="gc">✓</span> Revisa arriendos similares en el sector</li><li><span class="gc">✓</span> Define monto de garantía (1-2 meses)</li><li><span class="gc">✓</span> ¿Se permiten mascotas? ¿Fumadores?</li><li><span class="gc">✓</span> ¿Reajuste UF o IPC?</li></ul></div>
-    <div class="guide-card"><div class="guide-header"><div class="guide-num">3</div><h3>Evalúa postulantes</h3></div><ul class="guide-list"><li><span class="gc">✓</span> Solicita liquidaciones (mínimo 3 meses)</li><li><span class="gc">✓</span> Arriendo no supere el 30% del ingreso</li><li><span class="gc">✓</span> Verifica DICOM si tienes dudas</li><li><span class="gs">★</span> <span>Los postulantes suben documentos al ofertar</span></li></ul></div>
-    <div class="guide-card"><div class="guide-header"><div class="guide-num">4</div><h3>Firma y entrega</h3></div><ul class="guide-list"><li><span class="gc">✓</span> Contrato escrito firmado ante notario</li><li><span class="gc">✓</span> Recibe garantía antes de dar llaves</li><li><span class="gc">✓</span> Inventario y acta de entrega fotografiada</li><li><span class="gs">★</span> <span>Próximamente: modelo de contrato descargable</span></li></ul></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Cómo sé que los compradores son reales? <span class="faq-icon">+</span></div><div class="faq-a">Todos los que hacen una oferta deben tener correo y teléfono verificados. Opcionalmente pueden adjuntar carta de pre-aprobación bancaria.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Qué pasa si no vendo en 3 meses? <span class="faq-icon">+</span></div><div class="faq-a">Puedes renovar tu publicación por otro trimestre a precio reducido ($49.990 y luego $29.990).</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Puedo publicar si tengo hipoteca pendiente? <span class="faq-icon">+</span></div><div class="faq-a">Sí. Indica en la descripción que el precio incluye el alzamiento del crédito hipotecario.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Necesito un notario para cerrar? <span class="faq-icon">+</span></div><div class="faq-a">Sí. La compraventa en Chile requiere escritura pública ante notario e inscripción en el CBR.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">¿Me avisan cuando alguien hace una oferta? <span class="faq-icon">+</span></div><div class="faq-a">Sí. Recibirás un correo automático cada vez que llegue una nueva oferta con todos los detalles del comprador.</div></div>
   </div>
 </div></div>
 
 <!-- CTA -->
 <div class="cta-sec">
   <h2>¿Listo para publicar <span>sin intermediarios</span>?</h2>
-  <p>Únete a RematatuPropiedad.cl y ahorra millones en comisiones. Publica hoy, recibe ofertas esta semana.</p>
+  <p>Únete a RematatuPropiedad.cl y ahorra millones en comisiones.</p>
   <div class="cta-btns">
     <button class="btn-cta" onclick="openModal('registerModal')">Crear cuenta gratis</button>
     <button class="btn-ghost" onclick="openModal('publishModal')">Publicar propiedad</button>
   </div>
 </div>
-
 </div><!-- end mainContent -->
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboardPanel">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <h2 style="font-size:1.4rem;font-weight:800;color:var(--white)">Mi panel</h2>
+    <button class="btn-ghost" style="width:auto;padding:0.5rem 1rem;font-size:0.85rem" onclick="showMain()">← Volver al sitio</button>
+  </div>
+  <div class="dash-tabs">
+    <button class="dash-tab active" onclick="showDashTab(this,'misProps')">Mis propiedades</button>
+    <button class="dash-tab" onclick="showDashTab(this,'misOfertas')">Mis ofertas enviadas</button>
+    <button class="dash-tab" onclick="showDashTab(this,'miPerfil')">Mi perfil</button>
+    <button class="dash-tab" id="adminTab" style="display:none" onclick="showDashTab(this,'adminPanel')">⚙️ Admin</button>
+  </div>
+  <div id="misProps" class="dash-section active">
+    <button class="btn-cta" style="width:auto;padding:0.7rem 1.5rem;margin-bottom:1.25rem;font-size:0.9rem" onclick="openModal('publishModal')">+ Publicar nueva propiedad</button>
+    <div id="misPropsContainer"><div class="loader"><div class="spinner"></div> Cargando...</div></div>
+  </div>
+  <div id="misOfertas" class="dash-section">
+    <div id="misOfertasContainer"><div class="loader"><div class="spinner"></div> Cargando...</div></div>
+  </div>
+  <div id="miPerfil" class="dash-section">
+    <div class="dash-card">
+      <h3>Datos de mi cuenta</h3>
+      <div id="perfilForm" style="margin-top:0.75rem">
+        <div class="fg"><label>Nombre completo</label><input type="text" id="pNombre" class="fi" placeholder="Tu nombre"></div>
+        <div class="f2">
+          <div class="fg"><label>RUT</label><input type="text" id="pRut" class="fi" placeholder="12.345.678-9"></div>
+          <div class="fg"><label>Teléfono</label><input type="text" id="pTelefono" class="fi" placeholder="+56 9 1234 5678"></div>
+        </div>
+        <div class="fg"><label>Teléfono alternativo</label><input type="text" id="pTelefono2" class="fi" placeholder="+56 9 8765 4321"></div>
+        <div class="al-ok" id="perfilOk">✅ Perfil actualizado correctamente.</div>
+        <div class="al-er" id="perfilErr">❌ Error al actualizar. Intenta nuevamente.</div>
+        <button class="btn-submit" onclick="actualizarPerfil()">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+  <div id="adminPanel" class="dash-section">
+    <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:var(--white);margin-bottom:1rem">Propiedades pendientes de aprobación</h3>
+    <div id="adminPropsContainer"><div class="loader"><div class="spinner"></div> Cargando...</div></div>
+  </div>
+</div>
 
 <!-- PÁGINAS LEGALES -->
 <div class="page" id="termsPage">
   <div class="sec-tag blue" style="margin-bottom:0.75rem">Legal</div>
   <h2>Términos de Uso</h2>
-  <p style="color:var(--text2);font-size:0.85rem;margin-bottom:1.5rem">Última actualización: enero de 2025</p>
+  <p style="color:var(--text2);font-size:0.85rem;margin-bottom:1.5rem">Última actualización: mayo de 2025</p>
   <h3>1. Aceptación</h3><p>Al acceder y usar RematatuPropiedad.cl aceptas estos Términos de Uso.</p>
   <h3>2. Descripción del servicio</h3><p>RematatuPropiedad.cl conecta propietarios con compradores y arrendatarios sin corredores. Actuamos como intermediario tecnológico y no somos parte de las negociaciones.</p>
-  <h3>3. Registro</h3><p>Para publicar o hacer ofertas debes registrarte con información verídica: nombre completo, RUT válido, teléfono y correo. Eres responsable de la confidencialidad de tu cuenta.</p>
+  <h3>3. Registro</h3><p>Para publicar o hacer ofertas debes registrarte con información verídica. Recibirás un correo de confirmación para activar tu cuenta.</p>
   <h3>4. Tarifas y pagos</h3><p>Los pagos no son reembolsables una vez activada la publicación.</p>
   <h3>5. Responsabilidad</h3><p>RematatuPropiedad.cl no garantiza la concreción de ninguna operación. Los acuerdos son responsabilidad exclusiva de las partes.</p>
   <button class="btn-cta" onclick="showMain()" style="margin-top:1.5rem;width:auto;padding:0.85rem 1.75rem">← Volver al inicio</button>
 </div>
-
 <div class="page" id="privacyPage">
   <div class="sec-tag blue" style="margin-bottom:0.75rem">Legal</div>
   <h2>Política de Privacidad</h2>
-  <p style="color:var(--text2);font-size:0.85rem;margin-bottom:1.5rem">Última actualización: enero de 2025</p>
+  <p style="color:var(--text2);font-size:0.85rem;margin-bottom:1.5rem">Última actualización: mayo de 2025</p>
   <h3>1. Datos que recopilamos</h3><p>Nombre completo, RUT, teléfonos, correo electrónico, información de la propiedad y documentos adjuntos.</p>
-  <h3>2. Uso de los datos</h3><p>Usamos tus datos para gestionar tu cuenta, enviarte notificaciones y verificar identidades. No vendemos datos a terceros.</p>
-  <h3>3. Tus derechos</h3><p>Tienes derecho a acceder, rectificar y eliminar tus datos. Escríbenos a contacto@rematatupropiedad.cl con tu nombre y RUT.</p>
+  <h3>2. Uso de los datos</h3><p>Usamos tus datos para gestionar tu cuenta, enviarte notificaciones de ofertas y verificar identidades. No vendemos datos a terceros.</p>
+  <h3>3. Tus derechos</h3><p>Tienes derecho a acceder, rectificar y eliminar tus datos. Escríbenos a contacto@rematatupropiedad.cl</p>
   <button class="btn-cta" onclick="showMain()" style="margin-top:1.5rem;width:auto;padding:0.85rem 1.75rem">← Volver al inicio</button>
-</div>
-
-<div class="page" id="contactPage">
-  <div class="sec-tag blue" style="margin-bottom:0.75rem">Contacto</div>
-  <h2>Contáctanos</h2>
-  <p style="margin-bottom:2rem">Estamos aquí para ayudarte.</p>
-  <div class="contact-grid">
-    <div>
-      <div class="c-item"><div class="c-icon">📧</div><div><strong>Correo</strong><span>contacto@rematatupropiedad.cl</span></div></div>
-      <div class="c-item"><div class="c-icon">📱</div><div><strong>WhatsApp</strong><span>+56 9 XXXX XXXX</span></div></div>
-      <div class="c-item"><div class="c-icon">🕐</div><div><strong>Horario</strong><span>Lun–Vie, 9:00–18:00 hrs</span></div></div>
-      <div class="c-item"><div class="c-icon">📍</div><div><strong>Ubicación</strong><span>Concepción, Biobío, Chile</span></div></div>
-    </div>
-    <div>
-      <div class="al-ok" id="contactSuccess">✅ ¡Mensaje enviado! Te responderemos pronto.</div>
-      <div class="al-er" id="contactError">❌ Error al enviar. Intenta nuevamente.</div>
-      <form id="contactForm">
-        <input type="hidden" name="_subject" value="Contacto - RematatuPropiedad.cl">
-        <div class="fg"><label>Nombre <span class="req">*</span></label><input type="text" name="nombre" class="fi" required placeholder="Tu nombre completo"></div>
-        <div class="fg"><label>Correo <span class="req">*</span></label><input type="email" name="email" class="fi" required placeholder="tu@correo.cl"></div>
-        <div class="fg"><label>Asunto</label><select name="asunto" class="fi"><option>Consulta sobre publicación</option><option>Problemas con mi cuenta</option><option>Consulta sobre ofertas</option><option>Pagos</option><option>Otro</option></select></div>
-        <div class="fg"><label>Mensaje <span class="req">*</span></label><textarea name="mensaje" class="fi" required placeholder="¿En qué podemos ayudarte?"></textarea></div>
-        <button type="submit" class="btn-submit">Enviar mensaje →</button>
-      </form>
-    </div>
-  </div>
-  <button class="btn-cta" onclick="showMain()" style="margin-top:2rem;width:auto;padding:0.85rem 1.75rem">← Volver al inicio</button>
 </div>
 
 <footer>
   <div class="foot-inner">
-    <div class="logo" onclick="showMain()" style="cursor:pointer">
+    <div class="logo" onclick="showMain()">
       <div class="logo-mark">R</div>
       <div class="logo-text">Remata<em>Tu</em>Propiedad<em style="color:var(--text2);font-style:normal;font-weight:400">.cl</em></div>
     </div>
     <div class="foot-links">
       <a onclick="showPage('termsPage')">Términos</a>
       <a onclick="showPage('privacyPage')">Privacidad</a>
-      <a onclick="showPage('contactPage')">Contacto</a>
+      <a href="mailto:contacto@rematatupropiedad.cl">Contacto</a>
     </div>
-    <p class="foot-copy">© 2025 RematatuPropiedad.cl · Publica. Conecta. Remata. 🇨🇱</p>
+    <p style="font-size:0.75rem;color:var(--text2)">© 2025 RematatuPropiedad.cl 🇨🇱</p>
   </div>
 </footer>
-
-<!-- ========= MODALES ========= -->
-
-<!-- REGISTRO -->
+<!-- MODAL REGISTRO -->
 <div class="modal-overlay" id="registerModal">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header"><h2>Crear cuenta gratis</h2><button class="modal-close" onclick="closeModal('registerModal')">×</button></div>
     <div class="modal-body">
-      <div class="al-ok" id="registerSuccess">✅ ¡Cuenta creada! Revisa tu correo.</div>
-      <div class="al-er" id="registerError">❌ Error al registrarse. Intenta nuevamente.</div>
-      <form id="registerForm">
-        <input type="hidden" name="_subject" value="Nuevo registro - RematatuPropiedad.cl">
-        <div class="f2"><div class="fg"><label>Nombre completo <span class="req">*</span></label><input type="text" name="nombre" class="fi" placeholder="Juan Pérez" required></div><div class="fg"><label>RUT <span class="req">*</span></label><input type="text" name="rut" class="fi" placeholder="12.345.678-9" required></div></div>
-        <div class="f2"><div class="fg"><label>Teléfono <span class="req">*</span></label><input type="tel" name="telefono1" class="fi" placeholder="+56 9 1234 5678" required></div><div class="fg"><label>Tel. alternativo</label><input type="tel" name="telefono2" class="fi" placeholder="+56 9 8765 4321"></div></div>
-        <div class="fg"><label>Correo electrónico <span class="req">*</span></label><input type="email" name="email" class="fi" placeholder="tu@correo.cl" required></div>
-        <div class="f2"><div class="fg"><label>Contraseña <span class="req">*</span></label><input type="password" name="password" class="fi" placeholder="Mínimo 8 caracteres" required minlength="8"></div><div class="fg"><label>Confirmar contraseña <span class="req">*</span></label><input type="password" id="confirmPass" class="fi" placeholder="Repite tu contraseña" required></div></div>
-        <button type="submit" class="btn-submit">Crear mi cuenta →</button>
+      <div class="al-ok" id="registerOk">✅ ¡Cuenta creada! Revisa tu correo para confirmar.</div>
+      <div class="al-er" id="registerErr"></div>
+      <form id="registerForm" onsubmit="doRegister(event)">
+        <div class="f2">
+          <div class="fg"><label>Nombre completo <span class="req">*</span></label><input type="text" id="rNombre" class="fi" placeholder="Juan Pérez" required></div>
+          <div class="fg"><label>RUT <span class="req">*</span></label><input type="text" id="rRut" class="fi" placeholder="12.345.678-9" required></div>
+        </div>
+        <div class="f2">
+          <div class="fg"><label>Teléfono <span class="req">*</span></label><input type="tel" id="rTel" class="fi" placeholder="+56 9 1234 5678" required></div>
+          <div class="fg"><label>Tel. alternativo</label><input type="tel" id="rTel2" class="fi" placeholder="+56 9 8765 4321"></div>
+        </div>
+        <div class="fg"><label>Correo electrónico <span class="req">*</span></label><input type="email" id="rEmail" class="fi" placeholder="tu@correo.cl" required></div>
+        <div class="f2">
+          <div class="fg"><label>Contraseña <span class="req">*</span></label><input type="password" id="rPass" class="fi" placeholder="Mínimo 8 caracteres" required minlength="8"></div>
+          <div class="fg"><label>Confirmar <span class="req">*</span></label><input type="password" id="rPass2" class="fi" placeholder="Repite tu contraseña" required></div>
+        </div>
+        <button type="submit" class="btn-submit" id="registerBtn">Crear mi cuenta →</button>
         <p class="form-note">Al registrarte aceptas los <a onclick="closeModal('registerModal');showPage('termsPage')" style="color:var(--orange);cursor:pointer">Términos de Uso</a> y <a onclick="closeModal('registerModal');showPage('privacyPage')" style="color:var(--orange);cursor:pointer">Política de Privacidad</a>.</p>
+        <p class="form-note" style="margin-top:0.5rem">¿Ya tienes cuenta? <a onclick="closeModal('registerModal');openModal('loginModal')" style="color:var(--orange);cursor:pointer">Inicia sesión aquí</a></p>
       </form>
     </div>
   </div>
 </div>
 
-<!-- LOGIN -->
+<!-- MODAL LOGIN -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header"><h2>Ingresar a mi cuenta</h2><button class="modal-close" onclick="closeModal('loginModal')">×</button></div>
     <div class="modal-body">
-      <div class="fg"><label>Correo electrónico <span class="req">*</span></label><input type="email" class="fi" placeholder="tu@correo.cl"></div>
-      <div class="fg"><label>Contraseña <span class="req">*</span></label><input type="password" class="fi" placeholder="Tu contraseña"></div>
-      <button class="btn-submit">Ingresar →</button>
-      <p class="form-note">¿No tienes cuenta? <a href="#" onclick="closeModal('loginModal');openModal('registerModal')" style="color:var(--orange)">Regístrate gratis aquí</a></p>
-    </div>
-  </div>
-</div>
-
-<!-- PUBLICAR MULTISTEP -->
-<div class="modal-overlay" id="publishModal">
-  <div class="modal">
-    <div class="modal-header"><h2>Publicar mi propiedad</h2><button class="modal-close" onclick="closeModal('publishModal')">×</button></div>
-    <div class="modal-body">
-      <div class="al-ok" id="publishSuccess">✅ ¡Solicitud enviada! Te contactaremos pronto.</div>
-      <div class="al-er" id="publishError">❌ Error al enviar. Intenta nuevamente.</div>
-      <div class="step-dots"><div class="step-dot act" id="pdot0"></div><div class="step-dot" id="pdot1"></div><div class="step-dot" id="pdot2"></div><div class="step-dot" id="pdot3"></div></div>
-      <div class="step-lbl" id="pStepLabel"><span>Paso 1 de 4</span> — Tus datos personales</div>
-      <form id="publishForm">
-        <input type="hidden" name="_subject" value="Nueva publicación - RematatuPropiedad.cl">
-        <!-- PASO 1 -->
-        <div class="form-step active" id="pStep0">
-          <p style="font-size:0.85rem;color:var(--text2);margin-bottom:1rem">¿Ya tienes cuenta? <a href="#" onclick="closeModal('publishModal');openModal('loginModal')" style="color:var(--orange)">Inicia sesión aquí</a></p>
-          <div class="f2"><div class="fg"><label>Nombre completo <span class="req">*</span></label><input type="text" name="nombre" class="fi" placeholder="Juan Pérez González" required></div><div class="fg"><label>RUT <span class="req">*</span></label><input type="text" name="rut" class="fi" placeholder="12.345.678-9" required></div></div>
-          <div class="f2"><div class="fg"><label>Teléfono <span class="req">*</span></label><input type="tel" name="tel1" class="fi" placeholder="+56 9 1234 5678" required></div><div class="fg"><label>Tel. alternativo</label><input type="tel" name="tel2" class="fi" placeholder="+56 9 8765 4321"></div></div>
-          <div class="fg"><label>Correo electrónico <span class="req">*</span></label><input type="email" name="email" class="fi" placeholder="tu@correo.cl" required></div>
-          <div class="f2"><div class="fg"><label>Contraseña <span class="req">*</span></label><input type="password" name="pass" class="fi" placeholder="Mínimo 8 caracteres" minlength="8" required></div><div class="fg"><label>Confirmar <span class="req">*</span></label><input type="password" id="pConfirmPass" class="fi" placeholder="Repite tu contraseña" required></div></div>
-          <div class="form-btns"><button type="button" class="btn-next" style="flex:1" onclick="nextStep(0)">Siguiente →</button></div>
-        </div>
-        <!-- PASO 2 -->
-        <div class="form-step" id="pStep1">
-          <span class="fsec">Tipo y ubicación</span>
-          <div class="f2"><div class="fg"><label>Movimiento <span class="req">*</span></label><select name="movimiento" class="fi" required><option value="">Selecciona</option><option>Venta</option><option>Arriendo</option><option>Venta y arriendo</option></select></div><div class="fg"><label>Tipo de propiedad <span class="req">*</span></label><select name="tipo" class="fi" required><option value="">Selecciona</option><option>Casa</option><option>Departamento</option><option>Oficina</option><option>Local comercial</option><option>Terreno</option><option>Bodega</option><option>Parcela</option><option>Cabaña</option></select></div></div>
-          <div class="f2">
-            <div class="fg"><label>Región <span class="req">*</span></label><select name="region" id="pubRegion" class="fi" onchange="updateComunas('pubRegion','pubComuna')" required><option value="">Selecciona</option><option>Arica y Parinacota</option><option>Tarapacá</option><option>Antofagasta</option><option>Atacama</option><option>Coquimbo</option><option>Valparaíso</option><option>Metropolitana</option><option>O'Higgins</option><option>Maule</option><option>Ñuble</option><option>Biobío</option><option>Araucanía</option><option>Los Ríos</option><option>Los Lagos</option><option>Aysén</option><option>Magallanes</option></select></div>
-            <div class="fg"><label>Comuna <span class="req">*</span></label><select name="comuna" id="pubComuna" class="fi" required><option value="">Primero elige región</option></select></div>
-          </div>
-          <div class="fg"><label>Dirección exacta (privada) <span class="req">*</span></label><input type="text" name="direccion" class="fi" placeholder="Calle, número, depto/casa" required></div>
-          <span class="fsec">Precio y fecha de cierre</span>
-          <div class="f2"><div class="fg"><label>Precio <span class="req">*</span></label><input type="text" name="precio" class="fi" placeholder="Ej: UF 3.200 o $450.000/mes" required></div><div class="fg"><label>Fecha cierre de ofertas <span class="req">*</span></label><input type="date" name="fecha_cierre" class="fi" required></div></div>
-          <div class="pinfo"><p>📅 Se recomienda un horizonte de <strong>3 meses</strong>. Puedes cerrar antes si recibes una oferta conveniente.</p></div>
-          <div class="form-btns"><button type="button" class="btn-prev" onclick="prevStep(1)">← Anterior</button><button type="button" class="btn-next" onclick="nextStep(1)">Siguiente →</button></div>
-        </div>
-        <!-- PASO 3 -->
-        <div class="form-step" id="pStep2">
-          <span class="fsec">Superficies y dormitorios</span>
-          <div class="f3"><div class="fg"><label>Sup. total (m²)</label><input type="number" name="sup_total" class="fi" placeholder="Ej: 180"></div><div class="fg"><label>Sup. útil (m²)</label><input type="number" name="sup_util" class="fi" placeholder="Ej: 120"></div><div class="fg"><label>Terreno (m²)</label><input type="number" name="sup_terreno" class="fi" placeholder="Ej: 300"></div></div>
-          <div class="f3"><div class="fg"><label>Dormitorios</label><select name="dormitorios" class="fi"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6+</option></select></div><div class="fg"><label>Baños</label><select name="banos" class="fi"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4+</option></select></div><div class="fg"><label>Antigüedad</label><select name="antiguedad" class="fi"><option value="">-</option><option>Nuevo</option><option>Menos de 5 años</option><option>5-10 años</option><option>10-20 años</option><option>Más de 20 años</option></select></div></div>
-          <div class="f2"><div class="fg"><label>Estacionamientos</label><select name="estacionamientos" class="fi"><option value="">-</option><option>0</option><option>1</option><option>2</option><option>3+</option></select></div><div class="fg"><label>Bodegas</label><select name="bodegas" class="fi"><option value="">-</option><option>0</option><option>1</option><option>2+</option></select></div></div>
-          <span class="fsec">Características y entorno</span>
-          <div class="tag-cloud" id="publishTags">
-            <span class="tag" onclick="toggleTag(this)">Piscina</span><span class="tag" onclick="toggleTag(this)">Jardín</span><span class="tag" onclick="toggleTag(this)">Terraza</span><span class="tag" onclick="toggleTag(this)">Logia</span><span class="tag" onclick="toggleTag(this)">Gimnasio</span><span class="tag" onclick="toggleTag(this)">Conserje 24h</span><span class="tag" onclick="toggleTag(this)">Calefacción central</span><span class="tag" onclick="toggleTag(this)">Aire acondicionado</span><span class="tag" onclick="toggleTag(this)">Alarma</span><span class="tag" onclick="toggleTag(this)">Cámara seguridad</span><span class="tag" onclick="toggleTag(this)">Amoblado</span><span class="tag" onclick="toggleTag(this)">Cocina equipada</span><span class="tag" onclick="toggleTag(this)">Vista al mar</span><span class="tag" onclick="toggleTag(this)">Cerca metro</span><span class="tag" onclick="toggleTag(this)">Cerca colegio</span><span class="tag" onclick="toggleTag(this)">Acceso pavimentado</span><span class="tag" onclick="toggleTag(this)">Agua potable</span><span class="tag" onclick="toggleTag(this)">Gas natural</span><span class="tag" onclick="toggleTag(this)">Quincho / BBQ</span><span class="tag" onclick="toggleTag(this)">Barrio tranquilo</span>
-          </div>
-          <div class="fg" style="margin-top:0.9rem"><label>Descripción detallada</label><textarea name="descripcion" class="fi" placeholder="Describe la propiedad, entorno, estado, vecindario, accesos…"></textarea></div>
-          <div class="form-btns"><button type="button" class="btn-prev" onclick="prevStep(2)">← Anterior</button><button type="button" class="btn-next" onclick="nextStep(2)">Siguiente →</button></div>
-        </div>
-        <!-- PASO 4 -->
-        <div class="form-step" id="pStep3">
-          <span class="fsec">Fotos de la propiedad</span>
-          <div class="upload-z"><input type="file" accept="image/*" multiple id="photoInput" onchange="handlePhotos(this)"><p>📷 <span>Haz clic para subir fotos</span></p><p style="font-size:0.75rem;margin-top:0.3rem;color:var(--text2)">JPG, PNG — Máximo 60 imágenes</p></div>
-          <div class="up-preview" id="photoPreview"></div>
-          <span class="up-count" id="photoCount"></span>
-          <span class="fsec">Videos (máximo 2)</span>
-          <div class="upload-z"><input type="file" accept="video/*" multiple id="videoInput" onchange="handleVideos(this)"><p>🎥 <span>Haz clic para subir videos</span></p><p style="font-size:0.75rem;margin-top:0.3rem;color:var(--text2)">MP4, MOV — Máximo 2 videos</p></div>
-          <span class="up-count" id="videoCount"></span>
-          <span class="fsec">Documentos (opcional)</span>
-          <div class="upload-z"><input type="file" accept=".pdf,.jpg,.png" multiple><p>📄 <span>Escritura, tasación, planos, etc.</span></p></div>
-          <span class="fsec">Plan de publicación</span>
-          <div style="background:rgba(255,107,0,0.06);border:1px solid rgba(255,107,0,0.15);border-radius:12px;padding:1.1rem;margin-bottom:0.9rem">
-            <p style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;color:var(--white);margin-bottom:0.3rem">🏠 Venta — $69.990 / trimestre</p>
-            <p style="font-size:0.83rem;color:var(--text2)">60 fotos + 2 videos · Ofertas ilimitadas · Sin comisión final</p>
-          </div>
-          <p style="font-size:0.83rem;color:var(--text2);margin-bottom:0.9rem">Recibirás un correo con los datos de pago. Tu publicación se activa dentro de las 24 hrs hábiles siguientes.</p>
-          <div class="form-btns"><button type="button" class="btn-prev" onclick="prevStep(3)">← Anterior</button><button type="submit" class="btn-next" style="flex:2">Enviar solicitud →</button></div>
-          <p class="form-note">Al enviar aceptas los <a onclick="closeModal('publishModal');showPage('termsPage')" style="color:var(--orange);cursor:pointer">Términos de Uso</a></p>
-        </div>
+      <div class="al-er" id="loginErr"></div>
+      <form id="loginForm" onsubmit="doLogin(event)">
+        <div class="fg"><label>Correo electrónico <span class="req">*</span></label><input type="email" id="lEmail" class="fi" placeholder="tu@correo.cl" required></div>
+        <div class="fg"><label>Contraseña <span class="req">*</span></label><input type="password" id="lPass" class="fi" placeholder="Tu contraseña" required></div>
+        <button type="submit" class="btn-submit" id="loginBtn">Ingresar →</button>
+        <p class="form-note">¿No tienes cuenta? <a onclick="closeModal('loginModal');openModal('registerModal')" style="color:var(--orange);cursor:pointer">Regístrate gratis aquí</a></p>
+        <p class="form-note" style="margin-top:0.35rem"><a onclick="doResetPass()" style="color:var(--orange);cursor:pointer">¿Olvidaste tu contraseña?</a></p>
       </form>
     </div>
   </div>
 </div>
 
-<!-- OFERTA -->
+<!-- MODAL PUBLICAR -->
+<div class="modal-overlay" id="publishModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><h2>Publicar mi propiedad</h2><button class="modal-close" onclick="closeModal('publishModal')">×</button></div>
+    <div class="modal-body">
+      <div class="al-ok" id="publishOk">✅ ¡Publicación enviada! La revisaremos en 24 hrs hábiles y te notificaremos por correo.</div>
+      <div class="al-er" id="publishErr"></div>
+      <div id="publishFormWrap">
+        <div class="step-dots"><div class="step-dot act" id="pd0"></div><div class="step-dot" id="pd1"></div><div class="step-dot" id="pd2"></div><div class="step-dot" id="pd3"></div></div>
+        <div class="step-lbl" id="pLbl"><span>Paso 1 de 4</span> — Tus datos personales</div>
+        <!-- PASO 1 -->
+        <div class="form-step active" id="pS0">
+          <div id="p0GuestMsg" style="background:rgba(255,107,0,0.06);border:1px solid rgba(255,107,0,0.15);border-radius:10px;padding:0.85rem;margin-bottom:1rem">
+            <p style="font-size:0.85rem;color:var(--text2)">Para publicar necesitas una cuenta. <a onclick="closeModal('publishModal');openModal('registerModal')" style="color:var(--orange);cursor:pointer;font-weight:600">Regístrate gratis →</a> o <a onclick="closeModal('publishModal');openModal('loginModal')" style="color:var(--orange);cursor:pointer;font-weight:600">Inicia sesión</a></p>
+          </div>
+          <div id="p0LoggedMsg" style="display:none;background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);border-radius:10px;padding:0.85rem;margin-bottom:1rem">
+            <p style="font-size:0.85rem;color:var(--success)">✅ Sesión activa — tus datos ya están cargados.</p>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Nombre completo <span class="req">*</span></label><input type="text" id="pubNombre" class="fi" placeholder="Juan Pérez González" required></div>
+            <div class="fg"><label>RUT <span class="req">*</span></label><input type="text" id="pubRut" class="fi" placeholder="12.345.678-9"></div>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Teléfono <span class="req">*</span></label><input type="tel" id="pubTel" class="fi" placeholder="+56 9 1234 5678" required></div>
+            <div class="fg"><label>Tel. alternativo</label><input type="tel" id="pubTel2" class="fi" placeholder="+56 9 8765 4321"></div>
+          </div>
+          <div class="fg"><label>Correo electrónico <span class="req">*</span></label><input type="email" id="pubEmail" class="fi" placeholder="tu@correo.cl" required></div>
+          <div class="form-btns"><button type="button" class="btn-next" style="flex:1" onclick="nextPubStep(0)">Siguiente →</button></div>
+        </div>
+        <!-- PASO 2 -->
+        <div class="form-step" id="pS1">
+          <span class="fsec">Tipo y ubicación</span>
+          <div class="f2">
+            <div class="fg"><label>Movimiento <span class="req">*</span></label><select id="pubMov" class="fi" required><option value="">Selecciona</option><option value="venta">Venta</option><option value="arriendo">Arriendo</option><option value="venta_arriendo">Venta y arriendo</option></select></div>
+            <div class="fg"><label>Tipo <span class="req">*</span></label><select id="pubTipo" class="fi" required><option value="">Selecciona</option><option>Casa</option><option>Departamento</option><option>Oficina</option><option>Local comercial</option><option>Terreno</option><option>Bodega</option><option>Parcela</option><option>Cabaña</option></select></div>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Región <span class="req">*</span></label><select id="pubRegion" class="fi" onchange="updateComunas('pubRegion','pubComuna')" required><option value="">Selecciona</option><option>Arica y Parinacota</option><option>Tarapacá</option><option>Antofagasta</option><option>Atacama</option><option>Coquimbo</option><option>Valparaíso</option><option>Metropolitana</option><option>O'Higgins</option><option>Maule</option><option>Ñuble</option><option>Biobío</option><option>Araucanía</option><option>Los Ríos</option><option>Los Lagos</option><option>Aysén</option><option>Magallanes</option></select></div>
+            <div class="fg"><label>Comuna <span class="req">*</span></label><select id="pubComuna" class="fi" required><option value="">Primero elige región</option></select></div>
+          </div>
+          <div class="fg"><label>Dirección exacta (solo visible para ofertantes seleccionados)</label><input type="text" id="pubDireccion" class="fi" placeholder="Calle, número, depto/casa"></div>
+          <span class="fsec">Precio y fecha de cierre</span>
+          <div class="f2">
+            <div class="fg"><label>Precio <span class="req">*</span></label><input type="text" id="pubPrecio" class="fi" placeholder="Ej: UF 3.200 o $450.000/mes" required></div>
+            <div class="fg"><label>Fecha cierre de ofertas <span class="req">*</span></label><input type="date" id="pubFecha" class="fi" required></div>
+          </div>
+          <div class="pinfo"><p>📅 Se recomienda un horizonte de <strong>3 meses</strong>. Puedes cerrar antes si recibes una oferta conveniente.</p></div>
+          <div class="form-btns"><button type="button" class="btn-prev" onclick="prevPubStep(1)">← Anterior</button><button type="button" class="btn-next" onclick="nextPubStep(1)">Siguiente →</button></div>
+        </div>
+        <!-- PASO 3 -->
+        <div class="form-step" id="pS2">
+          <span class="fsec">Superficies y características</span>
+          <div class="f3">
+            <div class="fg"><label>Sup. total (m²)</label><input type="number" id="pubSupTotal" class="fi" placeholder="180"></div>
+            <div class="fg"><label>Sup. útil (m²)</label><input type="number" id="pubSupUtil" class="fi" placeholder="120"></div>
+            <div class="fg"><label>Terreno (m²)</label><input type="number" id="pubSupTerreno" class="fi" placeholder="300"></div>
+          </div>
+          <div class="f3">
+            <div class="fg"><label>Dormitorios</label><select id="pubDorm" class="fi"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6+</option></select></div>
+            <div class="fg"><label>Baños</label><select id="pubBanos" class="fi"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4+</option></select></div>
+            <div class="fg"><label>Antigüedad</label><select id="pubAnt" class="fi"><option value="">-</option><option>Nuevo</option><option>Menos de 5 años</option><option>5-10 años</option><option>10-20 años</option><option>Más de 20 años</option></select></div>
+          </div>
+          <div class="f2">
+            <div class="fg"><label>Estacionamientos</label><select id="pubEst" class="fi"><option value="">-</option><option>0</option><option>1</option><option>2</option><option>3+</option></select></div>
+            <div class="fg"><label>Bodegas</label><select id="pubBod" class="fi"><option value="">-</option><option>0</option><option>1</option><option>2+</option></select></div>
+          </div>
+          <span class="fsec">Extras que agregan valor</span>
+          <div class="tag-cloud" id="pubTags">
+            <span class="tag" onclick="toggleTag(this)">Piscina</span><span class="tag" onclick="toggleTag(this)">Jardín</span><span class="tag" onclick="toggleTag(this)">Terraza</span><span class="tag" onclick="toggleTag(this)">Logia</span><span class="tag" onclick="toggleTag(this)">Gimnasio</span><span class="tag" onclick="toggleTag(this)">Conserje 24h</span><span class="tag" onclick="toggleTag(this)">Calefacción central</span><span class="tag" onclick="toggleTag(this)">Aire acondicionado</span><span class="tag" onclick="toggleTag(this)">Alarma</span><span class="tag" onclick="toggleTag(this)">Cámara seguridad</span><span class="tag" onclick="toggleTag(this)">Amoblado</span><span class="tag" onclick="toggleTag(this)">Cocina equipada</span><span class="tag" onclick="toggleTag(this)">Vista al mar</span><span class="tag" onclick="toggleTag(this)">Cerca metro</span><span class="tag" onclick="toggleTag(this)">Cerca colegio</span><span class="tag" onclick="toggleTag(this)">Acceso pavimentado</span><span class="tag" onclick="toggleTag(this)">Agua potable</span><span class="tag" onclick="toggleTag(this)">Gas natural</span><span class="tag" onclick="toggleTag(this)">Quincho / BBQ</span><span class="tag" onclick="toggleTag(this)">Barrio tranquilo</span>
+          </div>
+          <div class="fg" style="margin-top:0.9rem"><label>Descripción detallada <span class="req">*</span></label><textarea id="pubDesc" class="fi" required placeholder="Describe la propiedad, su entorno, estado, vecindario, accesos, puntos de interés cercanos…"></textarea></div>
+          <div class="form-btns"><button type="button" class="btn-prev" onclick="prevPubStep(2)">← Anterior</button><button type="button" class="btn-next" onclick="nextPubStep(2)">Siguiente →</button></div>
+        </div>
+        <!-- PASO 4 -->
+        <div class="form-step" id="pS3">
+          <span class="fsec">Fotos de la propiedad</span>
+          <div class="upload-z"><input type="file" accept="image/*" multiple id="pubFotos" onchange="handleFotos(this)"><p>📷 <span>Haz clic para subir fotos</span></p><p style="font-size:0.75rem;margin-top:0.3rem;color:var(--text2)">JPG, PNG — Máximo 60 imágenes · Las mejores fotos = más ofertas</p></div>
+          <div class="up-preview" id="fotosPreview"></div>
+          <span class="up-count" id="fotosCount"></span>
+          <span class="fsec">Videos (máximo 2)</span>
+          <div class="upload-z"><input type="file" accept="video/*" multiple id="pubVideos" onchange="handleVideos(this)"><p>🎥 <span>Haz clic para subir videos</span></p><p style="font-size:0.75rem;margin-top:0.3rem;color:var(--text2)">MP4, MOV — Máximo 2 videos</p></div>
+          <span class="up-count" id="videosCount"></span>
+          <span class="fsec">Documentos opcionales</span>
+          <div class="upload-z"><input type="file" accept=".pdf,.jpg,.png" multiple><p>📄 <span>Escritura, tasación, planos (opcionales)</span></p><p style="font-size:0.75rem;margin-top:0.3rem;color:var(--text2)">Aumentan la confianza de los compradores</p></div>
+          <span class="fsec">Resumen y pago</span>
+          <div style="background:rgba(255,107,0,0.06);border:1px solid rgba(255,107,0,0.15);border-radius:12px;padding:1.1rem;margin-bottom:0.9rem">
+            <p style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:1rem;color:var(--white);margin-bottom:0.4rem">🏠 Publicación — $69.990 / trimestre</p>
+            <p style="font-size:0.83rem;color:var(--text2)">60 fotos + 2 videos · Ofertas ilimitadas · Correos automáticos · Panel de control · Sin comisión final</p>
+            <p style="font-size:0.82rem;color:var(--text2);margin-top:0.5rem">Recibirás los datos de pago por correo. Tu publicación se activa en 24 hrs hábiles tras confirmar el pago.</p>
+          </div>
+          <div class="form-btns"><button type="button" class="btn-prev" onclick="prevPubStep(3)">← Anterior</button><button type="button" class="btn-next" style="flex:2" onclick="doPublish()">Enviar solicitud →</button></div>
+          <p class="form-note">Al enviar aceptas los <a onclick="closeModal('publishModal');showPage('termsPage')" style="color:var(--orange);cursor:pointer">Términos de Uso</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL OFERTA -->
 <div class="modal-overlay" id="ofertaModal">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-header"><h2>Hacer una oferta</h2><button class="modal-close" onclick="closeModal('ofertaModal')">×</button></div>
     <div class="modal-body">
-      <div class="al-ok" id="ofertaSuccess">✅ ¡Oferta enviada! El propietario será notificado.</div>
-      <div class="al-er" id="ofertaError">❌ Error al enviar. Intenta nuevamente.</div>
-      <div style="background:rgba(255,107,0,0.08);border:1px solid rgba(255,107,0,0.2);border-radius:12px;padding:1rem;margin-bottom:1.25rem">
-        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text2);margin-bottom:0.25rem">Precio publicado</div>
-        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.6rem;font-weight:800;color:var(--orange)">UF 5.800</div>
-        <div style="font-size:0.8rem;color:var(--text2);margin-top:0.25rem">Casa 4D/3B — San Pedro de la Paz, Biobío · 4 ofertas activas</div>
+      <div class="al-ok" id="ofertaOk">✅ ¡Oferta enviada! El propietario recibirá un correo con tu oferta.</div>
+      <div class="al-er" id="ofertaErr"></div>
+      <div id="ofertaPropInfo" style="background:rgba(255,107,0,0.08);border:1px solid rgba(255,107,0,0.2);border-radius:12px;padding:1rem;margin-bottom:1.25rem"></div>
+      <div id="ofertaLoginMsg" style="display:none;text-align:center;padding:1.5rem 0">
+        <p style="color:var(--text2);margin-bottom:1rem;font-size:0.9rem">Para hacer una oferta necesitas una cuenta verificada.</p>
+        <div style="display:flex;gap:0.75rem;justify-content:center">
+          <button class="btn-cta" style="width:auto;padding:0.7rem 1.25rem;font-size:0.85rem" onclick="closeModal('ofertaModal');openModal('registerModal')">Crear cuenta gratis</button>
+          <button class="btn-ghost" style="width:auto;padding:0.7rem 1.25rem;font-size:0.85rem" onclick="closeModal('ofertaModal');openModal('loginModal')">Ingresar</button>
+        </div>
       </div>
-      <form id="ofertaForm">
-        <input type="hidden" name="_subject" value="Nueva oferta - RematatuPropiedad.cl">
-        <div class="f2"><div class="fg"><label>Tu nombre <span class="req">*</span></label><input type="text" name="nombre" class="fi" placeholder="Juan Pérez González" required></div><div class="fg"><label>RUT <span class="req">*</span></label><input type="text" name="rut" class="fi" placeholder="12.345.678-9" required></div></div>
-        <div class="f2"><div class="fg"><label>Teléfono <span class="req">*</span></label><input type="tel" name="telefono" class="fi" placeholder="+56 9 1234 5678" required></div><div class="fg"><label>Correo <span class="req">*</span></label><input type="email" name="email" class="fi" placeholder="tu@correo.cl" required></div></div>
-        <div class="fg"><label>Tu oferta <span class="req">*</span></label><input type="text" name="oferta" class="fi" placeholder="Ej: UF 5.500 o precio de publicación" required></div>
-        <div class="fg"><label>Forma de pago</label><select name="pago" class="fi"><option value="">Selecciona</option><option>Crédito hipotecario bancario</option><option>Crédito hipotecario mutuaria</option><option>Al contado</option><option>Mixto</option><option>Por definir</option></select></div>
-        <div class="fg"><label>Carta pre-aprobación (PDF, JPG)</label><div class="upload-z"><input type="file" accept=".pdf,.jpg,.png" multiple><p>📄 <span>Sube tu respaldo bancario</span></p><p style="font-size:0.75rem;margin-top:0.3rem;color:var(--text2)">Aumenta tus chances — el propietario prioriza ofertas con respaldo</p></div></div>
-        <div class="fg"><label>Mensaje al propietario</label><textarea name="mensaje" class="fi" placeholder="Preséntate: por qué te interesa la propiedad, cuándo dispondrías de los fondos…"></textarea></div>
-        <button type="submit" class="btn-submit">Enviar oferta →</button>
+      <form id="ofertaForm" onsubmit="doOferta(event)" style="display:none">
+        <div class="f2">
+          <div class="fg"><label>Tu oferta <span class="req">*</span></label><input type="text" id="ofMonto" class="fi" placeholder="Ej: UF 5.500" required></div>
+          <div class="fg"><label>Forma de pago <span class="req">*</span></label><select id="ofPago" class="fi" required><option value="">Selecciona</option><option value="contado">Al contado</option><option value="hipotecario">Crédito hipotecario</option><option value="leasing">Leasing habitacional</option><option value="mixto">Mixto</option><option value="por_definir">Por definir</option></select></div>
+        </div>
+        <div class="fg">
+          <label>Horizonte de compra <span class="req">*</span></label>
+          <select id="ofHorizonte" class="fi" required>
+            <option value="">¿Cuándo podrías comprar?</option>
+            <option value="inmediato">🟢 Inmediato (tengo los fondos listos)</option>
+            <option value="una_semana">📅 En una semana</option>
+            <option value="un_mes">📅 En un mes</option>
+            <option value="tres_meses">📅 En 3 meses</option>
+            <option value="seis_meses">📅 En 6 meses</option>
+            <option value="mas_de_seis">📅 Más de 6 meses</option>
+          </select>
+        </div>
+        <div class="fg"><label>Carta pre-aprobación (PDF, JPG) — Opcional</label><div class="upload-z"><input type="file" id="ofRespaldo" accept=".pdf,.jpg,.png"><p>📄 <span>Sube tu respaldo bancario</span></p><p style="font-size:0.75rem;margin-top:0.3rem;color:var(--text2)">Aumenta tus chances — el propietario prioriza ofertas con respaldo</p></div></div>
+        <div class="fg"><label>Mensaje al propietario</label><textarea id="ofMensaje" class="fi" placeholder="Preséntate: por qué te interesa la propiedad, cuándo dispondrías de los fondos…"></textarea></div>
+        <button type="submit" class="btn-submit" id="ofertaBtn">Enviar oferta →</button>
         <p class="form-note">Tu oferta va directo al propietario. No compartimos tu info con terceros.</p>
       </form>
     </div>
   </div>
 </div>
 
-<!-- ========= SCRIPT ========= -->
+<!-- MODAL NOTIFICACIONES -->
+<div class="modal-overlay" id="notifModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header"><h2>🔔 Notificaciones</h2><button class="modal-close" onclick="closeModal('notifModal')">×</button></div>
+    <div class="modal-body" id="notifContainer"><div class="loader"><div class="spinner"></div> Cargando...</div></div>
+  </div>
+</div>
 <script>
-const COMUNAS={"Arica y Parinacota":["Arica","Camarones","Putre","General Lagos"],"Tarapacá":["Iquique","Alto Hospicio","Pozo Almonte","Camiña","Colchane","Huara","Pica"],"Antofagasta":["Antofagasta","Mejillones","Sierra Gorda","Taltal","Calama","Ollagüe","San Pedro de Atacama","Tocopilla","María Elena"],"Atacama":["Copiapó","Caldera","Tierra Amarilla","Chañaral","Diego de Almagro","Vallenar","Alto del Carmen","Freirina","Huasco"],"Coquimbo":["La Serena","Coquimbo","Andacollo","La Higuera","Paiguano","Vicuña","Illapel","Canela","Los Vilos","Salamanca","Ovalle","Combarbalá","Monte Patria","Punitaqui","Río Hurtado"],"Valparaíso":["Valparaíso","Casablanca","Concón","Puchuncaví","Quintero","Viña del Mar","Los Andes","La Ligua","Quillota","Calera","San Antonio","Algarrobo","Cartagena","El Quisco","El Tabo","Santo Domingo","San Felipe","Quilpué","Limache","Villa Alemana"],"Metropolitana":["Santiago","Cerrillos","Cerro Navia","Conchalí","El Bosque","Estación Central","Huechuraba","Independencia","La Cisterna","La Florida","La Granja","La Pintana","La Reina","Las Condes","Lo Barnechea","Lo Espejo","Lo Prado","Macul","Maipú","Ñuñoa","Pedro Aguirre Cerda","Peñalolén","Providencia","Pudahuel","Quilicura","Quinta Normal","Recoleta","Renca","San Joaquín","San Miguel","San Ramón","Vitacura","Puente Alto","Pirque","San José de Maipo","Colina","Lampa","Tiltil","San Bernardo","Buin","Calera de Tango","Paine","Melipilla","Alhué","Curacaví","María Pinto","Talagante","El Monte","Isla de Maipo","Padre Hurtado","Peñaflor"],"O'Higgins":["Rancagua","Codegua","Coinco","Coltauco","Doñihue","Graneros","Las Cabras","Machalí","Malloa","Mostazal","Olivar","Peumo","Pichidegua","Quinta de Tilcoco","Rengo","Requínoa","San Vicente","Pichilemu","La Estrella","Litueche","Marchihue","Navidad","Paredones","San Fernando","Chépica","Chimbarongo","Lolol","Nancagua","Palmilla","Peralillo","Placilla","Pumanque","Santa Cruz"],"Maule":["Talca","Constitución","Curepto","Empedrado","Maule","Pelarco","Pencahue","Río Claro","San Clemente","San Rafael","Cauquenes","Chanco","Pelluhue","Curicó","Hualañé","Licantén","Molina","Rauco","Romeral","Sagrada Familia","Teno","Vichuquén","Linares","Colbún","Longaví","Parral","Retiro","San Javier","Villa Alegre","Yerbas Buenas"],"Ñuble":["Chillán","Bulnes","Cobquecura","Coelemu","Coihueco","Chillán Viejo","El Carmen","Ninhue","Ñiquén","Pemuco","Pinto","Portezuelo","Quillón","Quirihue","Ránquil","San Carlos","San Fabián","San Ignacio","San Nicolás","Treguaco","Yungay"],"Biobío":["Concepción","Coronel","Chiguayante","Florida","Hualpén","Hualqui","Lota","Penco","San Pedro de la Paz","Santa Juana","Talcahuano","Tomé","Lebu","Arauco","Cañete","Contulmo","Curanilahue","Los Álamos","Tirúa","Los Ángeles","Antuco","Cabrero","Laja","Mulchén","Nacimiento","Negrete","Quilaco","Quilleco","San Rosendo","Santa Bárbara","Tucapel","Yumbel","Alto Biobío"],"Araucanía":["Temuco","Carahue","Cunco","Curarrehue","Freire","Galvarino","Gorbea","Lautaro","Loncoche","Melipeuco","Nueva Imperial","Padre las Casas","Perquenco","Pitrufquén","Pucón","Saavedra","Toltén","Vilcún","Villarrica","Cholchol","Angol","Collipulli","Curacautín","Ercilla","Lonquimay","Los Sauces","Lumaco","Purén","Renaico","Traiguén","Victoria"],"Los Ríos":["Valdivia","Corral","Futrono","La Unión","Lago Ranco","Lanco","Los Lagos","Máfil","Mariquina","Paillaco","Panguipulli","Río Bueno"],"Los Lagos":["Puerto Montt","Calbuco","Cochamó","Fresia","Frutillar","Los Muermos","Llanquihue","Maullín","Puerto Varas","Castro","Ancud","Chonchi","Dalcahue","Quellón","Osorno","Puerto Octay","Purranque","Puyehue","Río Negro","Chaitén","Futaleufú","Palena"],"Aysén":["Coyhaique","Lago Verde","Aysén","Cisnes","Guaitecas","Cochrane","Tortel","Chile Chico","Río Ibáñez"],"Magallanes":["Punta Arenas","Laguna Blanca","Río Verde","San Gregorio","Cabo de Hornos","Antártica","Porvenir","Primavera","Timaukel","Natales","Torres del Paine"]};
+// ===== SUPABASE CONFIG =====
+const SUPA_URL = 'https://vkdkzudalyxxvfldwvjt.supabase.co';
+const SUPA_KEY = 'sb_publishable_qhFy0Utj8GeT8dZvXHHcvw_3pu7-Q3F';
+const { createClient } = supabase;
+const sb = createClient(SUPA_URL, SUPA_KEY);
 
-function scroll2(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'})}
-function navGo(id){showMain();setTimeout(()=>scroll2(id),50)}
+// ===== STATE =====
+let currentUser = null;
+let currentPerfil = null;
+let currentPropId = null; // para modal oferta
+let propOffset = 0;
+const PROPS_PER_PAGE = 9;
+
+// ===== COMUNAS =====
+const COMUNAS={"Arica y Parinacota":["Arica","Camarones","Putre","General Lagos"],"Tarapacá":["Iquique","Alto Hospicio","Pozo Almonte","Camiña","Colchane","Huara","Pica"],"Antofagasta":["Antofagasta","Mejillones","Sierra Gorda","Taltal","Calama","Ollagüe","San Pedro de Atacama","Tocopilla","María Elena"],"Atacama":["Copiapó","Caldera","Tierra Amarilla","Chañaral","Diego de Almagro","Vallenar","Alto del Carmen","Freirina","Huasco"],"Coquimbo":["La Serena","Coquimbo","Andacollo","La Higuera","Paiguano","Vicuña","Illapel","Canela","Los Vilos","Salamanca","Ovalle","Combarbalá","Monte Patria","Punitaqui","Río Hurtado"],"Valparaíso":["Valparaíso","Casablanca","Concón","Puchuncaví","Quintero","Viña del Mar","Los Andes","La Ligua","Quillota","Calera","San Antonio","Algarrobo","Cartagena","El Quisco","El Tabo","Santo Domingo","San Felipe","Quilpué","Limache","Villa Alemana"],"Metropolitana":["Santiago","Cerrillos","Cerro Navia","Conchalí","El Bosque","Estación Central","Huechuraba","Independencia","La Cisterna","La Florida","La Granja","La Pintana","La Reina","Las Condes","Lo Barnechea","Lo Espejo","Lo Prado","Macul","Maipú","Ñuñoa","Pedro Aguirre Cerda","Peñalolén","Providencia","Pudahuel","Quilicura","Quinta Normal","Recoleta","Renca","San Joaquín","San Miguel","San Ramón","Vitacura","Puente Alto","Pirque","San José de Maipo","Colina","Lampa","Tiltil","San Bernardo","Buin","Calera de Tango","Paine","Melipilla","Alhué","Curacaví","María Pinto","Talagante","El Monte","Isla de Maipo","Padre Hurtado","Peñaflor"],"O'Higgins":["Rancagua","Codegua","Coinco","Coltauco","Doñihue","Graneros","Las Cabras","Machalí","Malloa","Mostazal","Olivar","Peumo","Pichidegua","Quinta de Tilcoco","Rengo","Requínoa","San Vicente","Pichilemu","San Fernando","Chépica","Chimbarongo","Nancagua","Palmilla","Santa Cruz"],"Maule":["Talca","Constitución","Curepto","Empedrado","Maule","Pencahue","Río Claro","San Clemente","San Rafael","Cauquenes","Chanco","Pelluhue","Curicó","Hualañé","Licantén","Molina","Rauco","Romeral","Teno","Vichuquén","Linares","Colbún","Longaví","Parral","Retiro","San Javier","Villa Alegre","Yerbas Buenas"],"Ñuble":["Chillán","Bulnes","Cobquecura","Coelemu","Coihueco","Chillán Viejo","El Carmen","Ninhue","Pemuco","Pinto","San Carlos","San Ignacio","San Nicolás","Yungay"],"Biobío":["Concepción","Coronel","Chiguayante","Florida","Hualpén","Hualqui","Lota","Penco","San Pedro de la Paz","Santa Juana","Talcahuano","Tomé","Lebu","Arauco","Cañete","Contulmo","Curanilahue","Los Álamos","Tirúa","Los Ángeles","Antuco","Cabrero","Laja","Mulchén","Nacimiento","Negrete","Santa Bárbara","Tucapel","Yumbel","Alto Biobío"],"Araucanía":["Temuco","Carahue","Cunco","Freire","Galvarino","Gorbea","Lautaro","Loncoche","Melipeuco","Nueva Imperial","Padre las Casas","Pitrufquén","Pucón","Vilcún","Villarrica","Cholchol","Angol","Collipulli","Curacautín","Ercilla","Lonquimay","Lumaco","Purén","Renaico","Traiguén","Victoria"],"Los Ríos":["Valdivia","Corral","Futrono","La Unión","Lago Ranco","Lanco","Los Lagos","Máfil","Mariquina","Paillaco","Panguipulli","Río Bueno"],"Los Lagos":["Puerto Montt","Calbuco","Cochamó","Fresia","Frutillar","Los Muermos","Llanquihue","Maullín","Puerto Varas","Castro","Ancud","Chonchi","Dalcahue","Quellón","Osorno","Puerto Octay","Purranque","Puyehue","Río Negro","Chaitén","Futaleufú","Palena"],"Aysén":["Coyhaique","Lago Verde","Aysén","Cisnes","Guaitecas","Cochrane","Tortel","Chile Chico","Río Ibáñez"],"Magallanes":["Punta Arenas","Laguna Blanca","Río Verde","San Gregorio","Cabo de Hornos","Antártica","Porvenir","Primavera","Timaukel","Natales","Torres del Paine"]};
+
 function updateComunas(rId,cId){const r=document.getElementById(rId).value,s=document.getElementById(cId);s.innerHTML='<option value="">Selecciona comuna</option>';if(r&&COMUNAS[r])COMUNAS[r].forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;s.appendChild(o)})}
-function openModal(id){document.getElementById(id).classList.add('active');document.body.style.overflow='hidden'}
-function closeModal(id){document.getElementById(id).classList.remove('active');document.body.style.overflow='';if(id==='publishModal')resetSteps()}
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
-function toggleFaq(el){el.parentElement.classList.toggle('open')}
-function setTab(el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active')}
-function toggleTag(el){el.classList.toggle('selected')}
-function showPage(id){document.getElementById('mainContent').style.display='none';document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
-function showMain(){document.getElementById('mainContent').style.display='block';document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));window.scrollTo(0,0)}
 
-// Validación contraseñas
-function checkPass(p1,p2confirm){
-  if(p1.value!==p2confirm.value){p2confirm.setCustomValidity('Las contraseñas no coinciden');}
-  else{p2confirm.setCustomValidity('');}
-}
-// Register form
-const rPass=document.querySelector('#registerForm input[name="password"]');
-const rConf=document.getElementById('confirmPass');
-if(rPass&&rConf){rPass.addEventListener('input',()=>checkPass(rPass,rConf));rConf.addEventListener('input',()=>checkPass(rPass,rConf));}
-// Publish form
-const pPass=document.querySelector('#publishForm input[name="pass"]');
-const pConf=document.getElementById('pConfirmPass');
-if(pPass&&pConf){pPass.addEventListener('input',()=>checkPass(pPass,pConf));pConf.addEventListener('input',()=>checkPass(pPass,pConf));}
-function showPricing(t){
-  const isMobile=window.innerWidth<600;
-  const show=isMobile?'flex':'grid';
-  document.getElementById('pricingVenta').style.display=t==='venta'?show:'none';
-  document.getElementById('pricingArriendo').style.display=t==='arriendo'?show:'none';
-  document.getElementById('tabVenta').classList.toggle('on',t==='venta');
-  document.getElementById('tabArriendo').classList.toggle('on',t==='arriendo');
-}
-function showGuia(t){
-  const isMobile=window.innerWidth<600;
-  const show=isMobile?'flex':'grid';
-  document.getElementById('guiaVenta').style.display=t==='venta'?show:'none';
-  document.getElementById('guiaArriendo').style.display=t==='arriendo'?show:'none';
-  document.getElementById('tabGuiaVenta').classList.toggle('on',t==='venta');
-  document.getElementById('tabGuiaArriendo').classList.toggle('on',t==='arriendo');
-}
+// ===== AUTH =====
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    currentUser = session.user;
+    const {data} = await sb.from('perfiles').select('*').eq('id', currentUser.id).single();
+    currentPerfil = data;
+    updateNavUser(true);
+    cargarNotificaciones();
+  } else {
+    currentUser = null;
+    currentPerfil = null;
+    updateNavUser(false);
+  }
+});
 
-// MULTISTEP
-const STEP_LABELS=['Tus datos personales','Datos de la propiedad','Características','Fotos, videos y publicación'];
-let curStep=0;
-function gotoStep(n){
-  document.querySelectorAll('[id^="pStep"]').forEach((el,i)=>el.classList.toggle('active',i===n));
-  document.querySelectorAll('[id^="pdot"]').forEach((el,i)=>{el.classList.remove('act','done');if(i===n)el.classList.add('act');else if(i<n)el.classList.add('done')});
-  document.getElementById('pStepLabel').innerHTML=`<span>Paso ${n+1} de 4</span> — ${STEP_LABELS[n]}`;
-  document.querySelector('#publishModal .modal').scrollTop=0;
-  curStep=n;
-}
-function nextStep(n){gotoStep(n+1)}
-function prevStep(n){gotoStep(n-1)}
-function resetSteps(){gotoStep(0)}
-
-function handlePhotos(input){
-  const files=Array.from(input.files).slice(0,60),pv=document.getElementById('photoPreview'),pc=document.getElementById('photoCount');
-  pv.innerHTML='';
-  files.forEach(f=>{const img=document.createElement('img');img.className='prev-thumb';img.src=URL.createObjectURL(f);pv.appendChild(img)});
-  pc.textContent=files.length?`${files.length} foto${files.length>1?'s':''} seleccionada${files.length>1?'s':''}`:''
-}
-function handleVideos(input){const files=Array.from(input.files).slice(0,2);document.getElementById('videoCount').textContent=files.length?`${files.length} video${files.length>1?'s':''} seleccionado${files.length>1?'s':''}`:'' }
-
-async function submitForm(fId,ep,okId,errId){
-  const form=document.getElementById(fId);
-  if(!form.checkValidity()){form.reportValidity();return;}
-  const tags=[...document.querySelectorAll('#publishTags .tag.selected')].map(t=>t.textContent).join(', ');
-  const data=new FormData(form);
-  if(tags)data.append('caracteristicas',tags);
-  const btn=form.querySelector('[type="submit"],.btn-next[type="submit"]');
-  if(btn){btn.disabled=true;btn.textContent='Enviando…';}
-  try{
-    const r=await fetch(ep,{method:'POST',body:data,headers:{Accept:'application/json'}});
-    if(r.ok){
-      document.getElementById(okId).style.display='block';
-      form.reset();
-      document.querySelectorAll('.tag.selected').forEach(t=>t.classList.remove('selected'));
-      const pp=document.getElementById('photoPreview');if(pp)pp.innerHTML='';
-      const pc=document.getElementById('photoCount');if(pc)pc.textContent='';
-      if(btn){btn.disabled=false;btn.textContent='Enviar →';}
-      setTimeout(()=>document.getElementById(okId).style.display='none',7000);
-    }else{
-      const err=await r.json().catch(()=>({}));
-      console.error('Formspree error',err);
-      flash(errId);
-      if(btn){btn.disabled=false;btn.textContent='Reintentar →';}
+function updateNavUser(loggedIn) {
+  document.getElementById('navGuest').style.display = loggedIn ? 'none' : 'flex';
+  document.getElementById('navUser').style.display = loggedIn ? 'flex' : 'none';
+  if (loggedIn && currentPerfil) {
+    document.getElementById('navUserName').textContent = currentPerfil.nombre?.split(' ')[0] || '';
+    if (currentPerfil.rol === 'admin') {
+      document.getElementById('adminTab').style.display = 'block';
     }
-  }catch(e){
-    console.error(e);
-    flash(errId);
-    if(btn){btn.disabled=false;btn.textContent='Reintentar →';}
+  }
+  // Update publish modal step 1
+  const guestMsg = document.getElementById('p0GuestMsg');
+  const loggedMsg = document.getElementById('p0LoggedMsg');
+  if (guestMsg && loggedMsg) {
+    guestMsg.style.display = loggedIn ? 'none' : 'block';
+    loggedMsg.style.display = loggedIn ? 'block' : 'none';
+  }
+  if (loggedIn && currentPerfil) {
+    const campos = {pubNombre:'nombre', pubRut:'rut', pubTel:'telefono', pubTel2:'telefono2', pubEmail:'email'};
+    for (const [id, key] of Object.entries(campos)) {
+      const el = document.getElementById(id);
+      if (el && currentPerfil[key]) el.value = currentPerfil[key];
+    }
+    // Also email
+    const emailEl = document.getElementById('pubEmail');
+    if (emailEl && currentUser) emailEl.value = currentUser.email;
   }
 }
-function flash(id){document.getElementById(id).style.display='block';setTimeout(()=>document.getElementById(id).style.display='none',5000)}
 
-document.getElementById('registerForm').addEventListener('submit',e=>{e.preventDefault();submitForm('registerForm','https://formspree.io/f/xwvzqzrq','registerSuccess','registerError')});
-document.getElementById('publishForm').addEventListener('submit',e=>{e.preventDefault();submitForm('publishForm','https://formspree.io/f/mjgzozaj','publishSuccess','publishError')});
-document.getElementById('ofertaForm').addEventListener('submit',e=>{e.preventDefault();submitForm('ofertaForm','https://formspree.io/f/mjgzozaj','ofertaSuccess','ofertaError')});
-document.getElementById('contactForm').addEventListener('submit',e=>{e.preventDefault();submitForm('contactForm','https://formspree.io/f/xaqkbkpk','contactSuccess','contactError')});
+async function doRegister(e) {
+  e.preventDefault();
+  const pass = document.getElementById('rPass').value;
+  const pass2 = document.getElementById('rPass2').value;
+  if (pass !== pass2) { showErr('registerErr', 'Las contraseñas no coinciden.'); return; }
+  const btn = document.getElementById('registerBtn');
+  btn.disabled = true; btn.textContent = 'Creando cuenta...';
+  const nombre = document.getElementById('rNombre').value;
+  const rut = document.getElementById('rRut').value;
+  const tel = document.getElementById('rTel').value;
+  const tel2 = document.getElementById('rTel2').value;
+  const email = document.getElementById('rEmail').value;
+  const { error } = await sb.auth.signUp({
+    email, password: pass,
+    options: { data: { nombre, rut, telefono: tel, telefono2: tel2, rol: 'comprador' } }
+  });
+  btn.disabled = false; btn.textContent = 'Crear mi cuenta →';
+  if (error) { showErr('registerErr', error.message); return; }
+  document.getElementById('registerOk').style.display = 'block';
+  document.getElementById('registerForm').style.display = 'none';
+}
+
+async function doLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Ingresando...';
+  const { error } = await sb.auth.signInWithPassword({
+    email: document.getElementById('lEmail').value,
+    password: document.getElementById('lPass').value
+  });
+  btn.disabled = false; btn.textContent = 'Ingresar →';
+  if (error) { showErr('loginErr', 'Correo o contraseña incorrectos.'); return; }
+  closeModal('loginModal');
+}
+
+async function doResetPass() {
+  const email = document.getElementById('lEmail').value;
+  if (!email) { showErr('loginErr', 'Ingresa tu correo primero.'); return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+  if (error) { showErr('loginErr', error.message); return; }
+  showErr('loginErr', '✅ Te enviamos un correo para restablecer tu contraseña.', true);
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  showMain();
+}
+
+// ===== PROPIEDADES =====
+async function cargarPropiedades(filtro = {}) {
+  const container = document.getElementById('propsContainer');
+  container.innerHTML = '<div class="loader"><div class="spinner"></div> Cargando propiedades...</div>';
+  let query = sb.from('propiedades').select('*').eq('aprobada', true).eq('estado', 'activa').order('created_at', { ascending: false }).range(0, PROPS_PER_PAGE - 1);
+  if (filtro.movimiento) query = query.eq('movimiento', filtro.movimiento);
+  if (filtro.tipo) query = query.eq('tipo', filtro.tipo);
+  if (filtro.region) query = query.eq('region', filtro.region);
+  if (filtro.comuna) query = query.eq('comuna', filtro.comuna);
+  const { data, error } = await query;
+  if (error || !data?.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🏠</div><p>No hay propiedades disponibles aún.<br>¡Sé el primero en publicar!</p></div>';
+    return;
+  }
+  container.innerHTML = data.map(p => renderPropCard(p)).join('');
+}
+
+function renderPropCard(p) {
+  const iconos = {Casa:'🏠', Departamento:'🏢', Terreno:'🌿', Parcela:'🌾', Oficina:'🏛️', Local:'🏪', Cabaña:'🛖', Bodega:'📦'};
+  const foto = p.fotos?.[0] ? `<img src="${p.fotos[0]}" alt="${p.titulo}" loading="lazy">` : `<div class="prop-img-placeholder">${iconos[p.tipo]||'🏠'}</div>`;
+  const diasRestantes = p.fecha_cierre ? Math.max(0, Math.ceil((new Date(p.fecha_cierre) - new Date()) / 86400000)) : null;
+  const badgeRight = diasRestantes !== null ? (diasRestantes <= 7 ? `<div class="pbadge last-b">ÚLTIMOS ${diasRestantes} DÍAS</div>` : diasRestantes <= 30 ? `<div class="pbadge live-b">EN VIVO</div>` : `<div class="pbadge new-b">ACTIVA</div>`) : '';
+  const mov = p.movimiento === 'venta' ? 'VENTA' : p.movimiento === 'arriendo' ? 'ARRIENDO' : 'VENTA/ARRIENDO';
+  const tags = [p.dormitorios ? `${p.dormitorios}D` : null, p.banos ? `${p.banos}B` : null, p.sup_util ? `${p.sup_util}m²` : p.sup_total ? `${p.sup_total}m²` : null, ...(p.caracteristicas?.slice(0,2)||[])].filter(Boolean);
+  return `
+  <div class="prop-card" onclick="verPropiedad('${p.id}')">
+    <div class="prop-img">${foto}<div class="pbadge left">${mov}</div>${badgeRight}</div>
+    <div class="prop-body">
+      <div class="prop-title">${p.titulo}</div>
+      <div class="prop-loc">📍 ${p.comuna}, ${p.region}</div>
+      <div class="prop-price">${p.precio}</div>
+      <div class="prop-tags">${tags.map(t=>`<span class="prop-tag">${t}</span>`).join('')}</div>
+    </div>
+    <div class="prop-footer">
+      <div class="prop-offers">🔔 <strong id="ofCount_${p.id}">...</strong> ofertas</div>
+      ${diasRestantes !== null ? `<div class="prop-countdown">⏳ ${diasRestantes} días</div>` : ''}
+      <button class="btn-ofertar" onclick="event.stopPropagation();abrirOferta('${p.id}','${p.titulo}','${p.precio}','${p.comuna}')">Hacer oferta</button>
+    </div>
+  </div>`;
+}
+
+async function cargarMasPropiedades() {
+  propOffset += PROPS_PER_PAGE;
+  const { data } = await sb.from('propiedades').select('*').eq('aprobada', true).eq('estado', 'activa').order('created_at', { ascending: false }).range(propOffset, propOffset + PROPS_PER_PAGE - 1);
+  if (data?.length) {
+    document.getElementById('propsContainer').innerHTML += data.map(p => renderPropCard(p)).join('');
+  }
+}
+
+function filtrarProps(el, filtro) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  propOffset = 0;
+  const esMov = ['venta','arriendo'].includes(filtro);
+  cargarPropiedades(filtro ? (esMov ? {movimiento: filtro} : {tipo: filtro}) : {});
+}
+
+function buscarPropiedades() {
+  const filtro = {};
+  const region = document.getElementById('searchRegion').value;
+  const mov = document.getElementById('searchMov').value;
+  const tipo = document.getElementById('searchTipo').value;
+  const comuna = document.getElementById('searchComuna').value;
+  if (region) filtro.region = region;
+  if (mov) filtro.movimiento = mov;
+  if (tipo) filtro.tipo = tipo;
+  if (comuna) filtro.comuna = comuna;
+  navGo('propsSec');
+  cargarPropiedades(filtro);
+}
+
+async function verPropiedad(id) {
+  // Placeholder - abre modal de oferta por ahora
+  const {data} = await sb.from('propiedades').select('*').eq('id', id).single();
+  if (data) abrirOferta(data.id, data.titulo, data.precio, data.comuna);
+}
+
+// ===== OFERTA =====
+async function abrirOferta(propId, titulo, precio, comuna) {
+  currentPropId = propId;
+  document.getElementById('ofertaPropInfo').innerHTML = `
+    <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text2);margin-bottom:0.25rem">Propiedad</div>
+    <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:800;color:var(--white)">${titulo}</div>
+    <div style="font-size:0.9rem;color:var(--orange);font-weight:700;margin-top:0.2rem">${precio}</div>
+    <div style="font-size:0.78rem;color:var(--text2);margin-top:0.2rem">📍 ${comuna}</div>
+  `;
+  // Contar ofertas
+  const {count} = await sb.from('ofertas').select('*', {count:'exact',head:true}).eq('propiedad_id', propId);
+  const el = document.getElementById(`ofCount_${propId}`);
+  if (el) el.textContent = count || 0;
+  // Mostrar form solo si está logueado
+  document.getElementById('ofertaLoginMsg').style.display = currentUser ? 'none' : 'block';
+  document.getElementById('ofertaForm').style.display = currentUser ? 'block' : 'none';
+  document.getElementById('ofertaOk').style.display = 'none';
+  document.getElementById('ofertaErr').style.display = 'none';
+  openModal('ofertaModal');
+}
+
+async function doOferta(e) {
+  e.preventDefault();
+  if (!currentUser) { openModal('loginModal'); return; }
+  const btn = document.getElementById('ofertaBtn');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  // Subir respaldo si hay
+  let respaldoUrl = null;
+  const respaldoFile = document.getElementById('ofRespaldo').files[0];
+  if (respaldoFile) {
+    const path = `${currentUser.id}/respaldos/${Date.now()}_${respaldoFile.name}`;
+    const {data: upData, error: upErr} = await sb.storage.from('propiedades').upload(path, respaldoFile);
+    if (!upErr) {
+      const {data: urlData} = sb.storage.from('propiedades').getPublicUrl(path);
+      respaldoUrl = urlData.publicUrl;
+    }
+  }
+  const { error } = await sb.from('ofertas').insert({
+    propiedad_id: currentPropId,
+    comprador_id: currentUser.id,
+    monto: document.getElementById('ofMonto').value,
+    forma_pago: document.getElementById('ofPago').value,
+    horizonte: document.getElementById('ofHorizonte').value,
+    mensaje: document.getElementById('ofMensaje').value,
+    respaldo_url: respaldoUrl
+  });
+  btn.disabled = false; btn.textContent = 'Enviar oferta →';
+  if (error) { showErr('ofertaErr', 'Error al enviar la oferta. Intenta nuevamente.'); return; }
+  document.getElementById('ofertaOk').style.display = 'block';
+  document.getElementById('ofertaForm').style.display = 'none';
+  // Notificar vendedor
+  await notificarVendedor(currentPropId);
+}
+
+async function notificarVendedor(propId) {
+  const {data: prop} = await sb.from('propiedades').select('vendedor_id,titulo').eq('id', propId).single();
+  if (!prop) return;
+  await sb.from('notificaciones').insert({
+    usuario_id: prop.vendedor_id,
+    tipo: 'nueva_oferta',
+    mensaje: `Recibiste una nueva oferta en tu propiedad: ${prop.titulo}`,
+    data: { propiedad_id: propId }
+  });
+}
+
+// ===== PUBLICAR =====
+const PUB_STEPS = ['Tus datos','Tipo y ubicación','Características','Fotos y publicación'];
+let pubStep = 0;
+
+function updatePubStep(n) {
+  document.querySelectorAll('[id^="pS"]').forEach((el,i) => el.classList.toggle('active', i===n));
+  document.querySelectorAll('[id^="pd"]').forEach((el,i) => {
+    el.classList.remove('act','done');
+    if(i===n) el.classList.add('act');
+    else if(i<n) el.classList.add('done');
+  });
+  document.getElementById('pLbl').innerHTML = `<span>Paso ${n+1} de 4</span> — ${PUB_STEPS[n]}`;
+  document.querySelector('#publishModal .modal').scrollTop = 0;
+  pubStep = n;
+}
+function nextPubStep(n) {
+  if (!currentUser && n === 0) { closeModal('publishModal'); openModal('loginModal'); return; }
+  updatePubStep(n+1);
+}
+function prevPubStep(n) { updatePubStep(n-1); }
+
+async function doPublish() {
+  if (!currentUser) { closeModal('publishModal'); openModal('loginModal'); return; }
+  const btn = document.querySelector('#pS3 .btn-next');
+  btn.disabled = true; btn.textContent = 'Enviando...';
+  // Subir fotos
+  const fotosFiles = document.getElementById('pubFotos').files;
+  const fotosUrls = [];
+  for (const f of Array.from(fotosFiles).slice(0,60)) {
+    const path = `${currentUser.id}/${Date.now()}_${f.name}`;
+    const {error} = await sb.storage.from('propiedades').upload(path, f);
+    if (!error) {
+      const {data} = sb.storage.from('propiedades').getPublicUrl(path);
+      fotosUrls.push(data.publicUrl);
+    }
+  }
+  const tags = [...document.querySelectorAll('#pubTags .tag.selected')].map(t => t.textContent);
+  const { error } = await sb.from('propiedades').insert({
+    vendedor_id: currentUser.id,
+    titulo: `${document.getElementById('pubTipo').value} en ${document.getElementById('pubComuna').value}`,
+    tipo: document.getElementById('pubTipo').value,
+    movimiento: document.getElementById('pubMov').value,
+    region: document.getElementById('pubRegion').value,
+    comuna: document.getElementById('pubComuna').value,
+    direccion: document.getElementById('pubDireccion').value,
+    precio: document.getElementById('pubPrecio').value,
+    fecha_cierre: document.getElementById('pubFecha').value,
+    sup_total: document.getElementById('pubSupTotal').value || null,
+    sup_util: document.getElementById('pubSupUtil').value || null,
+    sup_terreno: document.getElementById('pubSupTerreno').value || null,
+    dormitorios: document.getElementById('pubDorm').value || null,
+    banos: document.getElementById('pubBanos').value || null,
+    antiguedad: document.getElementById('pubAnt').value,
+    estacionamientos: document.getElementById('pubEst').value || null,
+    bodegas: document.getElementById('pubBod').value || null,
+    descripcion: document.getElementById('pubDesc').value,
+    caracteristicas: tags,
+    fotos: fotosUrls,
+    estado: 'pendiente',
+    aprobada: false
+  });
+  btn.disabled = false; btn.textContent = 'Enviar solicitud →';
+  if (error) { showErr('publishErr', 'Error al enviar. Intenta nuevamente.'); return; }
+  document.getElementById('publishOk').style.display = 'block';
+  document.getElementById('publishFormWrap').style.display = 'none';
+}
+
+// ===== DASHBOARD =====
+function showDashboard() {
+  document.getElementById('mainContent').style.display = 'none';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('dashboardPanel').classList.add('active');
+  window.scrollTo(0,0);
+  cargarMisProps();
+  cargarMisOfertas();
+  cargarPerfil();
+  if (currentPerfil?.rol === 'admin') cargarAdminProps();
+}
+
+function showDashTab(el, id) {
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+async function cargarMisProps() {
+  if (!currentUser) return;
+  const {data} = await sb.from('propiedades').select('*').eq('vendedor_id', currentUser.id).order('created_at', {ascending:false});
+  const c = document.getElementById('misPropsContainer');
+  if (!data?.length) { c.innerHTML = '<div class="empty-state"><div class="icon">🏠</div><p>No tienes propiedades publicadas aún.</p></div>'; return; }
+  c.innerHTML = data.map(p => `
+    <div class="dash-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem">
+        <div>
+          <h3>${p.titulo||p.tipo+' en '+p.comuna}</h3>
+          <p>${p.region} · ${p.precio}</p>
+          <div style="margin-top:0.5rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+            <span class="status-badge ${p.aprobada ? 'activa' : 'pendiente'}">${p.aprobada ? '✅ Publicada' : '⏳ En revisión'}</span>
+            <span class="status-badge pendiente">${p.estado}</span>
+          </div>
+        </div>
+        <button class="btn-ofertar" style="font-size:0.75rem;padding:0.35rem 0.65rem" onclick="verOfertasDePropiedad('${p.id}')">Ver ofertas</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function verOfertasDePropiedad(propId) {
+  const {data} = await sb.from('ofertas').select('*, perfiles(nombre,telefono)').eq('propiedad_id', propId).order('created_at', {ascending:false});
+  const HORIZONTES = {inmediato:'🟢 Inmediato',una_semana:'📅 1 semana',un_mes:'📅 1 mes',tres_meses:'📅 3 meses',seis_meses:'📅 6 meses',mas_de_seis:'📅 +6 meses'};
+  const PAGOS = {contado:'Al contado',hipotecario:'Hipotecario',leasing:'Leasing',mixto:'Mixto',por_definir:'Por definir'};
+  const c = document.getElementById('misPropsContainer');
+  if (!data?.length) { alert('Esta propiedad no tiene ofertas aún.'); return; }
+  c.innerHTML = `<button class="btn-ghost" style="width:auto;padding:0.5rem 1rem;font-size:0.85rem;margin-bottom:1rem" onclick="cargarMisProps()">← Volver</button>
+    <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1rem;font-weight:700;color:var(--white);margin-bottom:1rem">Ofertas recibidas (${data.length})</h3>
+    ${data.map(o => `
+    <div class="oferta-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="oferta-monto">${o.monto}</div>
+          <div class="oferta-meta">👤 ${o.perfiles?.nombre||'Comprador'} · 📞 ${o.perfiles?.telefono||'-'}</div>
+          <div class="oferta-meta">${PAGOS[o.forma_pago]||o.forma_pago}</div>
+          <div class="oferta-horizonte">${HORIZONTES[o.horizonte]||o.horizonte}</div>
+          ${o.mensaje ? `<p style="font-size:0.82rem;color:var(--text2);margin-top:0.5rem;line-height:1.55">"${o.mensaje}"</p>` : ''}
+          ${o.respaldo_url ? `<a href="${o.respaldo_url}" target="_blank" style="color:var(--orange);font-size:0.78rem;display:block;margin-top:0.4rem">📄 Ver respaldo adjunto</a>` : ''}
+        </div>
+        <span class="status-badge ${o.estado}">${o.estado}</span>
+      </div>
+    </div>`).join('')}`;
+}
+
+async function cargarMisOfertas() {
+  if (!currentUser) return;
+  const {data} = await sb.from('ofertas').select('*, propiedades(titulo,precio,comuna,region)').eq('comprador_id', currentUser.id).order('created_at', {ascending:false});
+  const c = document.getElementById('misOfertasContainer');
+  const HORIZONTES = {inmediato:'🟢 Inmediato',una_semana:'📅 1 semana',un_mes:'📅 1 mes',tres_meses:'📅 3 meses',seis_meses:'📅 6 meses',mas_de_seis:'📅 +6 meses'};
+  if (!data?.length) { c.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>No has enviado ofertas aún.</p></div>'; return; }
+  c.innerHTML = data.map(o => `
+    <div class="oferta-card">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.9rem;font-weight:700;color:var(--white)">${o.propiedades?.titulo||'Propiedad'}</h3>
+      <p style="font-size:0.78rem;color:var(--text2)">📍 ${o.propiedades?.comuna}, ${o.propiedades?.region}</p>
+      <div class="oferta-monto">${o.monto}</div>
+      <div class="oferta-horizonte">${HORIZONTES[o.horizonte]||o.horizonte}</div>
+      <div style="margin-top:0.5rem"><span class="status-badge ${o.estado}">${o.estado}</span></div>
+    </div>`).join('');
+}
+
+async function cargarPerfil() {
+  if (!currentPerfil) return;
+  document.getElementById('pNombre').value = currentPerfil.nombre || '';
+  document.getElementById('pRut').value = currentPerfil.rut || '';
+  document.getElementById('pTelefono').value = currentPerfil.telefono || '';
+  document.getElementById('pTelefono2').value = currentPerfil.telefono2 || '';
+}
+
+async function actualizarPerfil() {
+  if (!currentUser) return;
+  const {error} = await sb.from('perfiles').update({
+    nombre: document.getElementById('pNombre').value,
+    rut: document.getElementById('pRut').value,
+    telefono: document.getElementById('pTelefono').value,
+    telefono2: document.getElementById('pTelefono2').value
+  }).eq('id', currentUser.id);
+  if (error) { document.getElementById('perfilErr').style.display='block'; return; }
+  document.getElementById('perfilOk').style.display = 'block';
+  setTimeout(() => document.getElementById('perfilOk').style.display='none', 4000);
+  const {data} = await sb.from('perfiles').select('*').eq('id', currentUser.id).single();
+  currentPerfil = data;
+}
+
+// ===== ADMIN =====
+async function cargarAdminProps() {
+  const {data} = await sb.from('propiedades').select('*, perfiles(nombre,telefono)').eq('aprobada', false).order('created_at', {ascending:false});
+  const c = document.getElementById('adminPropsContainer');
+  if (!data?.length) { c.innerHTML = '<div class="empty-state"><div class="icon">✅</div><p>No hay propiedades pendientes.</p></div>'; return; }
+  c.innerHTML = data.map(p => `
+    <div class="admin-prop-card">
+      <div class="admin-prop-info">
+        <h4>${p.titulo||p.tipo+' en '+p.comuna}</h4>
+        <p>${p.region} · ${p.precio} · ${p.perfiles?.nombre||'-'} · ${p.perfiles?.telefono||'-'}</p>
+        <p style="margin-top:0.25rem;font-size:0.75rem">${p.descripcion?.substring(0,100)||''}...</p>
+      </div>
+      <div class="admin-btns">
+        <button class="btn-approve" onclick="aprobarProp('${p.id}',true)">✅ Aprobar</button>
+        <button class="btn-reject" onclick="aprobarProp('${p.id}',false)">❌ Rechazar</button>
+      </div>
+    </div>`).join('');
+}
+
+async function aprobarProp(id, aprobar) {
+  await sb.from('propiedades').update({ aprobada: aprobar, estado: aprobar ? 'activa' : 'finalizada' }).eq('id', id);
+  cargarAdminProps();
+  if (aprobar) {
+    const {data} = await sb.from('propiedades').select('vendedor_id,titulo').eq('id', id).single();
+    if (data) {
+      await sb.from('notificaciones').insert({ usuario_id: data.vendedor_id, tipo: 'propiedad_aprobada', mensaje: `✅ Tu propiedad "${data.titulo}" fue aprobada y ya está visible en el sitio.`, data: {propiedad_id: id} });
+    }
+  }
+}
+
+// ===== NOTIFICACIONES =====
+async function cargarNotificaciones() {
+  if (!currentUser) return;
+  const {data, count} = await sb.from('notificaciones').select('*', {count:'exact'}).eq('usuario_id', currentUser.id).eq('leida', false).order('created_at', {ascending:false});
+  const badge = document.getElementById('notifCount');
+  if (count > 0) { badge.textContent = count > 9 ? '9+' : count; badge.style.display = 'flex'; }
+  else { badge.style.display = 'none'; }
+}
+
+async function abrirNotificaciones() {
+  const {data} = await sb.from('notificaciones').select('*').eq('usuario_id', currentUser.id).order('created_at', {ascending:false}).limit(20);
+  const c = document.getElementById('notifContainer');
+  if (!data?.length) { c.innerHTML = '<div class="empty-state"><div class="icon">🔔</div><p>No tienes notificaciones.</p></div>'; return; }
+  c.innerHTML = data.map(n => `
+    <div style="padding:0.85rem 0;border-bottom:1px solid var(--border);display:flex;gap:0.75rem;align-items:flex-start">
+      <div style="font-size:1.25rem">${n.tipo==='nueva_oferta'?'🔔':n.tipo==='propiedad_aprobada'?'✅':'📋'}</div>
+      <div>
+        <p style="font-size:0.87rem;color:${n.leida?'var(--text2)':'var(--white)'};font-weight:${n.leida?400:600}">${n.mensaje}</p>
+        <p style="font-size:0.72rem;color:var(--text2);margin-top:0.25rem">${new Date(n.created_at).toLocaleString('es-CL')}</p>
+      </div>
+    </div>`).join('');
+  // Marcar como leídas
+  await sb.from('notificaciones').update({leida:true}).eq('usuario_id', currentUser.id).eq('leida', false);
+  document.getElementById('notifCount').style.display = 'none';
+}
+
+// ===== FOTOS/VIDEOS =====
+function handleFotos(input) {
+  const files = Array.from(input.files).slice(0,60);
+  const prev = document.getElementById('fotosPreview');
+  prev.innerHTML = '';
+  files.forEach(f => {
+    const img = document.createElement('img');
+    img.className = 'prev-thumb';
+    img.src = URL.createObjectURL(f);
+    prev.appendChild(img);
+  });
+  document.getElementById('fotosCount').textContent = files.length ? `${files.length} foto${files.length>1?'s':''} seleccionada${files.length>1?'s':''}` : '';
+}
+function handleVideos(input) {
+  const files = Array.from(input.files).slice(0,2);
+  document.getElementById('videosCount').textContent = files.length ? `${files.length} video${files.length>1?'s':''} seleccionado${files.length>1?'s':''}` : '';
+}
+
+// ===== NAVIGATION =====
+function navGo(id) {
+  showMain();
+  setTimeout(() => { const el = document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth'}); }, 50);
+}
+function showMain() {
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('dashboardPanel').classList.remove('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  window.scrollTo(0,0);
+}
+function showPage(id) {
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('dashboardPanel').classList.remove('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===== MODALS =====
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  document.body.style.overflow = 'hidden';
+  if (id === 'notifModal') abrirNotificaciones();
+  if (id === 'publishModal') {
+    document.getElementById('publishOk').style.display = 'none';
+    document.getElementById('publishFormWrap').style.display = 'block';
+    updatePubStep(0);
+  }
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) closeModal(m.id); }));
+
+// ===== MISC =====
+function toggleFaq(el) { el.parentElement.classList.toggle('open'); }
+function toggleTag(el) { el.classList.toggle('selected'); }
+function showPricing(t) {
+  const isMobile = window.innerWidth < 600;
+  const show = isMobile ? 'flex' : 'grid';
+  document.getElementById('pricingVenta').style.display = t==='venta' ? show : 'none';
+  document.getElementById('pricingArriendo').style.display = t==='arriendo' ? show : 'none';
+  document.getElementById('tabVenta').classList.toggle('on', t==='venta');
+  document.getElementById('tabArriendo').classList.toggle('on', t==='arriendo');
+}
+function showErr(id, msg, isOk=false) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = isOk ? 'rgba(0,229,160,0.08)' : 'rgba(255,59,107,0.08)';
+  el.style.color = isOk ? 'var(--success)' : 'var(--live)';
+  el.style.border = isOk ? '1px solid rgba(0,229,160,0.25)' : '1px solid rgba(255,59,107,0.25)';
+  setTimeout(() => el.style.display='none', 6000);
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  cargarPropiedades();
+});
 </script>
 </body>
 </html>
